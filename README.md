@@ -25,7 +25,7 @@ Projeto pessoal desenvolvido com auxílio de IA, usando **HTML, CSS e JavaScript
 ---
 
 ## 🚀 Como Usar
-1. **Acesse** o site: https://SEU-USUARIO.github.io/SEU-REPOSITORIO  
+1. **Acesse** o site: https://victorx73.github.io/BetFlow-Tracker/
 2. **Adicione** suas apostas  
 3. **Marque** vitória ou derrota  
 4. **Acompanhe** os resultados  
