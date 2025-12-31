@@ -1517,7 +1517,7 @@ function registrar(resultado) {
     resultado,
     valor: apostaSelecionada.valor,
     retorno: apostaSelecionada.retorno,
-    id: Date.now() // ID único baseado no timestamp
+    id: Date.now() + Math.floor(Math.random() * 1000) // ID único melhorado
   };
 
   historico.push(novoRegistro);
@@ -1633,12 +1633,19 @@ function filtrarHistorico() {
   renderHistorico(registrosFiltrados);
 }
 
-// Função para remover um registro específico
+// Função para remover um registro específico - CORRIGIDA
 function removerRegistro(id) {
+  // Converter id para número para garantir a comparação correta
+  const idNumero = Number(id);
+  
   abrirConfirmacao(
     'Tem certeza que deseja remover este registro?',
     () => {
-      historico = historico.filter(registro => registro.id !== id);
+      // Filtrar mantendo apenas os registros com ID diferente
+      historico = historico.filter(registro => {
+        return Number(registro.id) !== idNumero;
+      });
+      
       salvar();
       filtrar();
       filtrarHistorico();
@@ -1706,10 +1713,13 @@ function importarDados() {
       () => {
         apostas = dados.apostas;
         historico = dados.historico;
-        // Garantir que todos os registros tenham um ID
+        // Garantir que todos os registros tenham um ID único
         historico.forEach(registro => {
           if (!registro.id) {
-            registro.id = Date.now() + Math.random();
+            registro.id = Date.now() + Math.floor(Math.random() * 1000000);
+          } else {
+            // Garantir que o ID seja número
+            registro.id = Number(registro.id);
           }
         });
         salvar();
