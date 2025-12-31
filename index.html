@@ -541,41 +541,59 @@ button i {
   width: 100%;
 }
 
+.historico-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
 .historico-filters {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
   gap: 10px;
   margin-bottom: 15px;
   align-items: end;
+  width: 100%;
 }
 
-.historico-table {
+.historico-table-container {
   width: 100%;
   overflow-x: auto;
   border-radius: 10px;
   border: 1px solid var(--card-border);
+  max-height: 500px;
+  overflow-y: auto;
+  position: relative;
 }
 
-.historico-table table {
+.historico-table {
   width: 100%;
-  border-collapse: collapse;
   min-width: 600px;
+  border-collapse: collapse;
 }
 
 .historico-table th {
   background: rgba(255, 255, 255, 0.05);
-  padding: 12px 15px;
+  padding: 15px;
   text-align: left;
   font-weight: 600;
   color: var(--text-secondary);
   border-bottom: 1px solid var(--card-border);
   font-size: 0.9rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
 }
 
 .historico-table td {
-  padding: 12px 15px;
+  padding: 15px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 0.95rem;
+  vertical-align: middle;
 }
 
 .historico-table tr:last-child td {
@@ -597,25 +615,31 @@ button i {
 }
 
 .status-badge {
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
 }
 
 .status-badge.vitoria {
-  background: rgba(0, 204, 136, 0.2);
+  background: rgba(0, 204, 136, 0.15);
   color: var(--success);
+  border: 1px solid rgba(0, 204, 136, 0.3);
 }
 
 .status-badge.derrota {
-  background: rgba(255, 85, 85, 0.2);
+  background: rgba(255, 85, 85, 0.15);
   color: var(--danger);
+  border: 1px solid rgba(255, 85, 85, 0.3);
 }
 
 .lucro-cell {
   font-weight: 600;
+  font-size: 1rem;
 }
 
 .lucro-cell.positivo {
@@ -634,16 +658,87 @@ button i {
   background: rgba(255, 85, 85, 0.1);
   color: var(--danger);
   border: 1px solid rgba(255, 85, 85, 0.3);
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
 }
 
 .delete-btn:hover {
   background: rgba(255, 85, 85, 0.2);
   transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(255, 85, 85, 0.2);
+}
+
+.clear-history-btn {
+  background: rgba(255, 85, 85, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(255, 85, 85, 0.3);
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  height: fit-content;
+}
+
+.clear-history-btn:hover {
+  background: rgba(255, 85, 85, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 85, 85, 0.2);
+}
+
+.historico-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.historico-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.stat-value-small {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.stat-value-small.positivo {
+  color: var(--success);
+}
+
+.stat-value-small.negativo {
+  color: var(--danger);
 }
 
 .import-export-section {
@@ -820,6 +915,17 @@ footer {
     gap: 10px;
   }
   
+  .historico-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .clear-history-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
   .result-buttons {
     grid-template-columns: 1fr;
   }
@@ -846,13 +952,30 @@ footer {
     padding: 6px 8px;
   }
   
-  .historico-table {
-    font-size: 0.9rem;
+  .historico-table-container {
+    max-height: 400px;
   }
   
   .historico-table th,
   .historico-table td {
-    padding: 8px 10px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+  
+  .status-badge {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .historico-summary {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .historico-stats {
+    justify-content: space-between;
+    width: 100%;
   }
 }
 
@@ -905,7 +1028,28 @@ footer {
     min-width: 70px;
   }
   
-  .historico-table {
+  .historico-table-container {
+    max-height: 350px;
+  }
+  
+  .historico-table th,
+  .historico-table td {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+  
+  .status-badge {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .delete-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .clear-history-btn {
+    padding: 8px 12px;
     font-size: 0.85rem;
   }
 }
@@ -929,7 +1073,8 @@ footer {
   .btn-info:hover,
   .sort-btn:hover,
   .stat-card:hover,
-  .delete-btn:hover {
+  .delete-btn:hover,
+  .clear-history-btn:hover {
     transform: none;
   }
   
@@ -943,7 +1088,8 @@ footer {
   .btn-info:active,
   .sort-btn:active,
   .stat-card:active,
-  .delete-btn:active {
+  .delete-btn:active,
+  .clear-history-btn:active {
     transform: scale(0.98);
   }
 }
@@ -1092,7 +1238,12 @@ input, textarea {
     
     <!-- Histórico de Registros -->
     <div class="historico-container">
-      <h3><i class="fas fa-history"></i> Histórico de Registros</h3>
+      <div class="historico-header">
+        <h3><i class="fas fa-history"></i> Histórico de Registros</h3>
+        <button class="clear-history-btn" onclick="limparHistorico()">
+          <i class="fas fa-trash-alt"></i> Limpar Histórico
+        </button>
+      </div>
       
       <div class="historico-filters">
         <div class="input-group">
@@ -1108,13 +1259,13 @@ input, textarea {
         </button>
       </div>
       
-      <div class="historico-table">
-        <table id="tabelaHistorico">
+      <div class="historico-table-container">
+        <table class="historico-table" id="tabelaHistorico">
           <thead>
             <tr>
               <th>Data</th>
               <th>Resultado</th>
-              <th>Valor</th>
+              <th>Valor Apostado</th>
               <th>Retorno</th>
               <th>Lucro</th>
               <th>Ações</th>
@@ -1126,13 +1277,21 @@ input, textarea {
         </table>
       </div>
       
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-        <p style="color: var(--text-secondary); font-size: 0.9rem;">
-          Total de registros: <span id="totalRegistros">0</span>
-        </p>
-        <button class="btn-secondary" onclick="limparHistorico()">
-          <i class="fas fa-trash"></i> Limpar Histórico
-        </button>
+      <div class="historico-summary">
+        <div class="historico-stats">
+          <div class="stat-item">
+            <span class="stat-label">Total de Registros</span>
+            <span class="stat-value-small" id="totalRegistros">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Total Apostado</span>
+            <span class="stat-value-small" id="totalApostadoHistorico">R$ 0.00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Lucro Total</span>
+            <span class="stat-value-small" id="lucroTotalHistorico">R$ 0.00</span>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -1388,6 +1547,8 @@ function formatarData(dataISO) {
 function renderHistorico(registrosFiltrados) {
   const corpoHistorico = document.getElementById('corpoHistorico');
   const totalRegistros = document.getElementById('totalRegistros');
+  const totalApostado = document.getElementById('totalApostadoHistorico');
+  const lucroTotal = document.getElementById('lucroTotalHistorico');
   
   corpoHistorico.innerHTML = '';
   
@@ -1402,6 +1563,9 @@ function renderHistorico(registrosFiltrados) {
       </tr>
     `;
     totalRegistros.textContent = '0';
+    totalApostado.textContent = 'R$ 0.00';
+    lucroTotal.textContent = 'R$ 0.00';
+    lucroTotal.className = 'stat-value-small';
     return;
   }
   
@@ -1415,25 +1579,32 @@ function renderHistorico(registrosFiltrados) {
     return b.id - a.id;
   });
   
+  // Calcular totais
+  let totalApostadoValue = 0;
+  let lucroTotalValue = 0;
+  
   registrosFiltrados.forEach(registro => {
+    totalApostadoValue += registro.valor;
     const lucro = registro.resultado === 'vitoria' ? registro.retorno - registro.valor : -registro.valor;
+    lucroTotalValue += lucro;
+    
     const row = document.createElement('tr');
     
     row.innerHTML = `
       <td>${formatarData(registro.data)}</td>
       <td>
         <span class="status-badge ${registro.resultado}">
-          ${registro.resultado === 'vitoria' ? '🏆 Vitória' : '❌ Derrota'}
+          ${registro.resultado === 'vitoria' ? '<i class="fas fa-trophy"></i> Vitória' : '<i class="fas fa-times-circle"></i> Derrota'}
         </span>
       </td>
-      <td>R$ ${registro.valor.toFixed(2)}</td>
+      <td style="font-weight: 600;">R$ ${registro.valor.toFixed(2)}</td>
       <td>R$ ${registro.retorno.toFixed(2)}</td>
       <td class="lucro-cell ${lucro > 0 ? 'positivo' : lucro < 0 ? 'negativo' : 'neutro'}">
         ${lucro > 0 ? '+' : ''}R$ ${lucro.toFixed(2)}
       </td>
       <td>
         <button class="delete-btn" onclick="removerRegistro(${registro.id})" title="Remover registro">
-          <i class="fas fa-trash"></i>
+          <i class="fas fa-trash"></i> Remover
         </button>
       </td>
     `;
@@ -1441,7 +1612,11 @@ function renderHistorico(registrosFiltrados) {
     corpoHistorico.appendChild(row);
   });
   
+  // Atualizar totais
   totalRegistros.textContent = registrosFiltrados.length;
+  totalApostado.textContent = `R$ ${totalApostadoValue.toFixed(2)}`;
+  lucroTotal.textContent = `${lucroTotalValue >= 0 ? '+' : ''}R$ ${lucroTotalValue.toFixed(2)}`;
+  lucroTotal.className = `stat-value-small ${lucroTotalValue > 0 ? 'positivo' : lucroTotalValue < 0 ? 'negativo' : ''}`;
 }
 
 // Função para filtrar o histórico
