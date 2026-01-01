@@ -1,1857 +1,1909 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BetFlow Tracker</title>
-
-<style>
-:root {
-  --primary: #0099ff;
-  --primary-dark: #007acc;
-  --success: #00cc88;
-  --success-dark: #00aa66;
-  --danger: #ff5555;
-  --danger-dark: #cc4444;
-  --warning: #ffaa00;
-  --warning-dark: #cc8800;
-  --dark-bg: #0a0e14;
-  --card-bg: #151a24;
-  --card-border: #2a3245;
-  --text: #f0f6fc;
-  --text-secondary: #8b949e;
-  --accent: #6e40c9;
-  --accent-light: #8a6dff;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
-
-html, body {
-  overflow-x: hidden;
-  max-width: 100%;
-  position: relative;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background: var(--dark-bg);
-  color: var(--text);
-  line-height: 1.6;
-  padding: 10px;
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(0, 153, 255, 0.05) 0%, transparent 20%),
-    radial-gradient(circle at 90% 80%, rgba(108, 64, 201, 0.05) 0%, transparent 20%);
-  min-height: 100vh;
-  width: 100%;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  overflow-x: hidden;
-}
-
-/* ===== HEADER ===== */
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid var(--card-border);
-  position: relative;
-  width: 100%;
-}
-
-.header h1 {
-  font-size: 1.8rem;
-  margin-bottom: 5px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-.header h1::before {
-  content: '🎯';
-  display: inline-block;
-  margin-right: 8px;
-  background: none;
-  color: #ffcc00;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.header h1 span {
-  background: linear-gradient(90deg, var(--primary), var(--accent-light));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.header p {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  max-width: 600px;
-  margin: 0 auto;
-  word-wrap: break-word;
-}
-
-.header-controls {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
-  width: 100%;
-}
-
-.btn-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--card-border);
-  color: var(--text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.btn-icon:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-}
-
-/* ===== NAVEGAÇÃO POR ABAS ===== */
-.nav-abas {
-  display: flex;
-  gap: 5px;
-  margin-bottom: 15px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 5px;
-  border: 1px solid var(--card-border);
-  width: 100%;
-  overflow-x: auto;
-}
-
-.nav-aba {
-  flex: 1;
-  padding: 12px 5px;
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  min-width: 80px;
-}
-
-.nav-aba i {
-  font-size: 0.9rem;
-}
-
-.nav-aba.active {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 153, 255, 0.3);
-}
-
-.nav-aba:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* ===== SEÇÕES (mostrar/apagar conforme aba) ===== */
-.secao-aba {
-  display: none;
-  animation: fadeIn 0.3s ease;
-}
-
-.secao-aba.active {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== CARDS BÁSICOS ===== */
-.card {
-  background: var(--card-bg);
-  border-radius: 14px;
-  padding: 15px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--card-border);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-  margin-bottom: 15px;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-}
-
-.card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--text);
-  font-weight: 600;
-  word-wrap: break-word;
-}
-
-.card h3 i {
-  color: var(--primary);
-  font-size: 1.1rem;
-  flex-shrink: 0;
-}
-
-.input-group {
-  margin-bottom: 12px;
-  width: 100%;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
-  width: 100%;
-}
-
-input, button, textarea {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: none;
-  font-size: 15px;
-  font-family: inherit;
-  transition: all 0.2s ease;
-  -webkit-appearance: none;
-  appearance: none;
-  box-sizing: border-box;
-}
-
-input {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--card-border);
-  color: var(--text);
-  max-width: 100%;
-}
-
-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.2);
-  background: rgba(0, 153, 255, 0.02);
-}
-
-input[type="date"] {
-  padding-right: 40px;
-  background: rgba(255, 255, 255, 0.03) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") no-repeat right 10px center;
-  background-size: 20px;
-}
-
-button {
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  letter-spacing: 0.3px;
-  flex-shrink: 0;
-}
-
-button i {
-  font-size: 1rem;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  border: none;
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 153, 255, 0.3);
-}
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text);
-  border: 1px solid var(--card-border);
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-}
-
-.btn-success {
-  background: linear-gradient(135deg, var(--success), var(--success-dark));
-  color: #000;
-  border: none;
-}
-
-.btn-success:hover {
-  background: linear-gradient(135deg, var(--success-dark), var(--success));
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 204, 136, 0.3);
-}
-
-.btn-danger {
-  background: linear-gradient(135deg, var(--danger), var(--danger-dark));
-  color: white;
-  border: none;
-}
-
-.btn-danger:hover {
-  background: linear-gradient(135deg, var(--danger-dark), var(--danger));
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 85, 85, 0.3);
-}
-
-.btn-warning {
-  background: linear-gradient(135deg, var(--warning), var(--warning-dark));
-  color: #000;
-  border: none;
-}
-
-.btn-warning:hover {
-  background: linear-gradient(135deg, var(--warning-dark), var(--warning));
-  transform: translateY(-2px);
-}
-
-.btn-info {
-  background: linear-gradient(135deg, var(--accent), #0099ff);
-  color: white;
-  border: none;
-}
-
-.btn-info:hover {
-  background: linear-gradient(135deg, #0099ff, var(--accent));
-  transform: translateY(-2px);
-}
-
-/* ===== ABA: APOSTAS ===== */
-.bets-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-  gap: 8px;
-  width: 100%;
-}
-
-.sort-options {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.sort-btn {
-  width: auto;
-  padding: 8px 10px;
-  font-size: 0.8rem;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-secondary);
-  border: 1px solid var(--card-border);
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sort-btn.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-.bets-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 8px;
-  margin-top: 10px;
-  width: 100%;
-}
-
-.bet-btn {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--card-border);
-  color: var(--text);
-  padding: 10px 6px;
-  border-radius: 10px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  min-height: 80px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.bet-btn.active {
-  background: linear-gradient(135deg, rgba(0, 204, 136, 0.9), rgba(0, 170, 102, 0.9));
-  color: #000;
-  border-color: var(--success);
-  box-shadow: 0 5px 15px rgba(0, 204, 136, 0.3);
-}
-
-.bet-value {
-  font-size: 0.9rem;
-  margin-bottom: 3px;
-  font-weight: 700;
-  word-break: break-word;
-  text-align: center;
-}
-
-.bet-return {
-  font-size: 0.8rem;
-  opacity: 0.9;
-  word-break: break-word;
-  text-align: center;
-}
-
-.bet-odds {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 0.6rem;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.bet-index {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  font-size: 0.6rem;
-  opacity: 0.6;
-  font-weight: 600;
-}
-
-.result-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
-  width: 100%;
-}
-
-/* ===== ABA: BANCA ===== */
-.banca-display {
-  background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(108, 64, 201, 0.1));
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 20px;
-  border: 1px solid rgba(0, 153, 255, 0.3);
-  text-align: center;
-}
-
-.banca-total {
-  font-size: 2.2rem;
-  font-weight: 800;
-  margin-bottom: 5px;
-  color: var(--text);
-}
-
-.banca-label {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-bottom: 15px;
-}
-
-.banca-variacao {
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 20px;
-  display: inline-block;
-}
-
-.banca-variacao.positiva {
-  background: rgba(0, 204, 136, 0.2);
-  color: var(--success);
-  border: 1px solid rgba(0, 204, 136, 0.3);
-}
-
-.banca-variacao.negativa {
-  background: rgba(255, 85, 85, 0.2);
-  color: var(--danger);
-  border: 1px solid rgba(255, 85, 85, 0.3);
-}
-
-.banca-acoes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.btn-deposito {
-  background: linear-gradient(135deg, var(--success), var(--success-dark));
-  color: #000;
-}
-
-.btn-saque {
-  background: linear-gradient(135deg, var(--danger), var(--danger-dark));
-  color: white;
-}
-
-.banca-detalhes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.banca-item {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 10px;
-  padding: 12px;
-  border: 1px solid var(--card-border);
-}
-
-.banca-item-label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-bottom: 5px;
-}
-
-.banca-item-valor {
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
-/* ===== ABA: ESTATÍSTICAS ===== */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.stat-card {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 10px;
-  padding: 12px;
-  text-align: center;
-  border: 1px solid var(--card-border);
-  transition: transform 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--primary);
-}
-
-.stat-card h4 {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  word-break: break-word;
-}
-
-.stat-value {
-  font-size: 1.3rem;
-  font-weight: 800;
-  word-break: break-all;
-}
-
-.stat-positive {
-  color: var(--success);
-}
-
-.stat-negative {
-  color: var(--danger);
-}
-
-.stat-neutral {
-  color: var(--text);
-}
-
-.lucro-card {
-  grid-column: 1 / -1;
-  background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(108, 64, 201, 0.1));
-  border: 1px solid rgba(0, 153, 255, 0.3);
-}
-
-.date-filters {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 15px;
-  width: 100%;
-}
-
-/* ===== ABA: RELATÓRIOS ===== */
-.relatorios-filters {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 8px;
-  margin-bottom: 15px;
-  align-items: end;
-}
-
-.periodos-rapidos {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.periodo-rapido {
-  padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: all 0.2s ease;
-  flex: 1;
-  text-align: center;
-  min-width: 70px;
-}
-
-.periodo-rapido.ativo {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-.relatorio-gerado {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  padding: 15px;
-  margin-top: 15px;
-  border: 1px solid var(--card-border);
-}
-
-.relatorio-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--card-border);
-}
-
-.relatorio-header h4 {
-  font-size: 1rem;
-  color: var(--text);
-}
-
-.relatorio-badge {
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.8rem;
-}
-
-.relatorio-badge.lucro {
-  background: rgba(0, 204, 136, 0.2);
-  color: var(--success);
-  border: 1px solid rgba(0, 204, 136, 0.3);
-}
-
-.relatorio-badge.prejuizo {
-  background: rgba(255, 85, 85, 0.2);
-  color: var(--danger);
-  border: 1px solid rgba(255, 85, 85, 0.3);
-}
-
-.relatorio-section {
-  margin-bottom: 20px;
-}
-
-.relatorio-section h5 {
-  font-size: 0.9rem;
-  color: var(--text);
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.relatorio-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.relatorio-stat {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  padding: 12px;
-  border: 1px solid var(--card-border);
-}
-
-.relatorio-stat-label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
-}
-
-.relatorio-stat-value {
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
-.relatorio-stat-value.positivo {
-  color: var(--success);
-}
-
-.relatorio-stat-value.negativo {
-  color: var(--danger);
-}
-
-.dias-lista {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.dia-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  border: 1px solid var(--card-border);
-}
-
-.dia-data {
-  font-weight: 600;
-  color: var(--text);
-  font-size: 0.85rem;
-}
-
-.dia-info {
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-}
-
-.dia-resultado {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.dia-resultado.positivo {
-  color: var(--success);
-}
-
-.dia-resultado.negativo {
-  color: var(--danger);
-}
-
-/* ===== ABA: HISTÓRICO ===== */
-.historico-filters {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 8px;
-  margin-bottom: 12px;
-  align-items: end;
-  width: 100%;
-}
-
-.historico-table-container {
-  width: 100%;
-  overflow-x: auto;
-  border-radius: 10px;
-  border: 1px solid var(--card-border);
-  max-height: 400px;
-  overflow-y: auto;
-  position: relative;
-}
-
-.historico-table {
-  width: 100%;
-  min-width: 600px;
-  border-collapse: collapse;
-}
-
-.historico-table th {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 12px 10px;
-  text-align: left;
-  font-weight: 600;
-  color: var(--text-secondary);
-  border-bottom: 1px solid var(--card-border);
-  font-size: 0.8rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: blur(10px);
-}
-
-.historico-table td {
-  padding: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  font-size: 0.85rem;
-  vertical-align: middle;
-}
-
-.historico-table tr:last-child td {
-  border-bottom: none;
-}
-
-.status-badge {
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-}
-
-.status-badge.vitoria {
-  background: rgba(0, 204, 136, 0.15);
-  color: var(--success);
-  border: 1px solid rgba(0, 204, 136, 0.3);
-}
-
-.status-badge.derrota {
-  background: rgba(255, 85, 85, 0.15);
-  color: var(--danger);
-  border: 1px solid rgba(255, 85, 85, 0.3);
-}
-
-.lucro-cell {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.lucro-cell.positivo {
-  color: var(--success);
-}
-
-.lucro-cell.negativo {
-  color: var(--danger);
-}
-
-.delete-btn {
-  background: rgba(255, 85, 85, 0.1);
-  color: var(--danger);
-  border: 1px solid rgba(255, 85, 85, 0.3);
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.75rem;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-}
-
-.clear-history-btn {
-  background: rgba(255, 85, 85, 0.1);
-  color: var(--danger);
-  border: 1px solid rgba(255, 85, 85, 0.3);
-  padding: 10px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  margin-top: 10px;
-}
-
-.historico-summary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 10px;
-  border: 1px solid var(--card-border);
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.historico-stats {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  width: 100%;
-  justify-content: space-between;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-.stat-value-small {
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.stat-value-small.positivo {
-  color: var(--success);
-}
-
-.stat-value-small.negativo {
-  color: var(--danger);
-}
-
-/* ===== ABA: CONFIGURAÇÕES ===== */
-.data-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 15px;
-  width: 100%;
-}
-
-.json-input {
-  font-family: 'Monaco', 'Consolas', monospace;
-  font-size: 13px;
-  min-height: 100px;
-  resize: vertical;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--card-border);
-  color: var(--text);
-  margin-bottom: 12px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.config-item {
-  margin-bottom: 15px;
-}
-
-.config-item h4 {
-  font-size: 0.95rem;
-  margin-bottom: 8px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ===== MODAIS ===== */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(5px);
-  overflow-y: auto;
-  padding: 15px;
-}
-
-.modal-content {
-  background: var(--card-bg);
-  border-radius: 14px;
-  padding: 15px;
-  max-width: 500px;
-  width: 100%;
-  border: 1px solid var(--card-border);
-  position: relative;
-  animation: modalIn 0.3s ease;
-  margin: auto;
-}
-
-.modal h3 {
-  margin-bottom: 12px;
-  color: var(--text);
-  font-size: 1.1rem;
-}
-
-.modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 1.2rem;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-
-@keyframes modalIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===== FOOTER ===== */
-footer {
-  text-align: center;
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid var(--card-border);
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-  width: 100%;
-}
-
-/* ===== ESTADOS VAZIOS ===== */
-.empty-state {
-  text-align: center;
-  padding: 25px 15px;
-  color: var(--text-secondary);
-  grid-column: 1 / -1;
-}
-
-.empty-state i {
-  font-size: 2rem;
-  margin-bottom: 8px;
-  opacity: 0.3;
-}
-
-.empty-state p {
-  font-size: 0.9rem;
-}
-
-/* ===== RESPONSIVIDADE ===== */
-@media (min-width: 768px) {
-  body {
-    padding: 20px;
-  }
-  
-  .header h1 {
-    font-size: 2.2rem;
-  }
-  
-  .header p {
-    font-size: 1rem;
-  }
-  
-  .nav-abas {
-    padding: 8px;
-  }
-  
-  .nav-aba {
-    padding: 12px 10px;
-    font-size: 0.9rem;
-  }
-  
-  .card {
-    padding: 20px;
-    border-radius: 16px;
-  }
-  
-  .bets-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-  }
-  
-  .bet-btn {
-    padding: 12px 8px;
-    min-height: 90px;
-  }
-  
-  .banca-total {
-    font-size: 2.8rem;
-  }
-  
-  .stats-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-  }
-  
-  .relatorio-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
-  
-  .historico-filters {
-    grid-template-columns: 1fr 1fr auto;
-    gap: 12px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .main-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  
-  .aba-apostas .main-content {
-    grid-template-columns: 1fr;
-  }
-  
-  .aba-estatisticas .main-content,
-  .aba-relatorios .main-content,
-  .aba-historico .main-content {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Prevenir zoom em inputs no iOS */
-@media screen and (max-width: 767px) {
-  input, select, textarea {
-    font-size: 16px !important;
-  }
-}
-
-/* Melhorias para toque */
-@media (hover: none) and (pointer: coarse) {
-  .btn-icon:hover,
-  .bet-btn:hover,
-  .btn-primary:hover,
-  .btn-secondary:hover,
-  .btn-success:hover,
-  .btn-danger:hover,
-  .btn-warning:hover,
-  .btn-info:hover,
-  .sort-btn:hover,
-  .stat-card:hover,
-  .delete-btn:hover,
-  .clear-history-btn:hover,
-  .periodo-rapido:hover,
-  .nav-aba:hover {
-    transform: none;
-  }
-  
-  .btn-icon:active,
-  .bet-btn:active,
-  .btn-primary:active,
-  .btn-secondary:active,
-  .btn-success:active,
-  .btn-danger:active,
-  .btn-warning:active,
-  .btn-info:active,
-  .sort-btn:active,
-  .stat-card:active,
-  .delete-btn:active,
-  .clear-history-btn:active,
-  .periodo-rapido:active,
-  .nav-aba:active {
-    transform: scale(0.98);
-  }
-}
-
-/* Prevenir seleção de texto desnecessária */
-* {
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-input, textarea {
-  -webkit-user-select: text;
-  user-select: text;
-}
-</style>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BetFlow Tracker</title>
+
+  <style>
+    :root {
+      --primary: #0099ff;
+      --primary-dark: #007acc;
+      --success: #00cc88;
+      --success-dark: #00aa66;
+      --danger: #ff5555;
+      --danger-dark: #cc4444;
+      --warning: #ffaa00;
+      --warning-dark: #cc8800;
+      --dark-bg: #0a0e14;
+      --card-bg: #151a24;
+      --card-border: #2a3245;
+      --text: #f0f6fc;
+      --text-secondary: #8b949e;
+      --accent: #6e40c9;
+      --accent-light: #8a6dff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+      max-width: 100%;
+      position: relative;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--dark-bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 10px;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(0, 153, 255, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(108, 64, 201, 0.05) 0%, transparent 20%);
+      min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--card-border);
+      position: relative;
+      width: 100%;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .header h1::before {
+      content: '🎯';
+      display: inline-block;
+      margin-right: 8px;
+      background: none;
+      color: #ffcc00;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .header h1 span {
+      background: linear-gradient(90deg, var(--primary), var(--accent-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      max-width: 600px;
+      margin: 0 auto;
+      word-wrap: break-word;
+    }
+
+    .header-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* ===== NAVEGAÇÃO POR ABAS ===== */
+    .nav-abas {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 5px;
+      border: 1px solid var(--card-border);
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .nav-aba {
+      flex: 1;
+      padding: 12px 5px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      min-width: 80px;
+    }
+
+    .nav-aba i {
+      font-size: 0.9rem;
+    }
+
+    .nav-aba.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 153, 255, 0.3);
+    }
+
+    .nav-aba:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ===== SEÇÕES (mostrar/apagar conforme aba) ===== */
+    .secao-aba {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .secao-aba.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== CARDS BÁSICOS ===== */
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 15px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--card-border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text);
+      font-weight: 600;
+      word-wrap: break-word;
+    }
+
+    .card h3 i {
+      color: var(--primary);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      width: 100%;
+    }
+
+    input,
+    button,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+      box-sizing: border-box;
+    }
+
+    input {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      max-width: 100%;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.2);
+      background: rgba(0, 153, 255, 0.02);
+    }
+
+    input[type="date"] {
+      padding-right: 40px;
+      background: rgba(255, 255, 255, 0.03) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") no-repeat right 10px center;
+      background-size: 20px;
+    }
+
+    button {
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+    }
+
+    button i {
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 153, 255, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), var(--success-dark));
+      color: #000;
+      border: none;
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, var(--success-dark), var(--success));
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 204, 136, 0.3);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+      color: white;
+      border: none;
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, var(--danger-dark), var(--danger));
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 85, 85, 0.3);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, var(--warning), var(--warning-dark));
+      color: #000;
+      border: none;
+    }
+
+    .btn-warning:hover {
+      background: linear-gradient(135deg, var(--warning-dark), var(--warning));
+      transform: translateY(-2px);
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, var(--accent), #0099ff);
+      color: white;
+      border: none;
+    }
+
+    .btn-info:hover {
+      background: linear-gradient(135deg, #0099ff, var(--accent));
+      transform: translateY(-2px);
+    }
+
+    /* ===== ABA: APOSTAS ===== */
+    .bets-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .sort-btn {
+      width: auto;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      border: 1px solid var(--card-border);
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sort-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .bets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .bet-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bet-btn.active {
+      background: linear-gradient(135deg, rgba(0, 204, 136, 0.9), rgba(0, 170, 102, 0.9));
+      color: #000;
+      border-color: var(--success);
+      box-shadow: 0 5px 15px rgba(0, 204, 136, 0.3);
+    }
+
+    .bet-value {
+      font-size: 0.9rem;
+      margin-bottom: 3px;
+      font-weight: 700;
+      word-break: break-word;
+      text-align: center;
+    }
+
+    .bet-return {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      word-break: break-word;
+      text-align: center;
+    }
+
+    .bet-odds {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-size: 0.6rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .bet-index {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      font-size: 0.6rem;
+      opacity: 0.6;
+      font-weight: 600;
+    }
+
+    .result-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    /* ===== ABA: BANCA ===== */
+    .banca-display {
+      background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(108, 64, 201, 0.1));
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0, 153, 255, 0.3);
+      text-align: center;
+    }
+
+    .banca-total {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+
+    .banca-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+
+    .banca-variacao {
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    .banca-variacao.positiva {
+      background: rgba(0, 204, 136, 0.2);
+      color: var(--success);
+      border: 1px solid rgba(0, 204, 136, 0.3);
+    }
+
+    .banca-variacao.negativa {
+      background: rgba(255, 85, 85, 0.2);
+      color: var(--danger);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+    }
+
+    .banca-acoes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .btn-deposito {
+      background: linear-gradient(135deg, var(--success), var(--success-dark));
+      color: #000;
+    }
+
+    .btn-saque {
+      background: linear-gradient(135deg, var(--danger), var(--danger-dark));
+      color: white;
+    }
+
+    .banca-detalhes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .banca-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .banca-item-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .banca-item-valor {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    /* ===== ABA: ESTATÍSTICAS ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid var(--card-border);
+      transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+    }
+
+    .stat-card h4 {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      word-break: break-word;
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: 800;
+      word-break: break-all;
+    }
+
+    .stat-positive {
+      color: var(--success);
+    }
+
+    .stat-negative {
+      color: var(--danger);
+    }
+
+    .stat-neutral {
+      color: var(--text);
+    }
+
+    .lucro-card {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(108, 64, 201, 0.1));
+      border: 1px solid rgba(0, 153, 255, 0.3);
+    }
+
+    .date-filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    /* ===== ABA: RELATÓRIOS ===== */
+    .relatorios-filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      margin-bottom: 15px;
+      align-items: end;
+    }
+
+    .periodos-rapidos {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .periodo-rapido {
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+      flex: 1;
+      text-align: center;
+      min-width: 70px;
+    }
+
+    .periodo-rapido.ativo {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .relatorio-gerado {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      border: 1px solid var(--card-border);
+    }
+
+    .relatorio-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .relatorio-header h4 {
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .relatorio-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .relatorio-badge.lucro {
+      background: rgba(0, 204, 136, 0.2);
+      color: var(--success);
+      border: 1px solid rgba(0, 204, 136, 0.3);
+    }
+
+    .relatorio-badge.prejuizo {
+      background: rgba(255, 85, 85, 0.2);
+      color: var(--danger);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+    }
+
+    .relatorio-section {
+      margin-bottom: 20px;
+    }
+
+    .relatorio-section h5 {
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .relatorio-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .relatorio-stat {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .relatorio-stat-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .relatorio-stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .relatorio-stat-value.positivo {
+      color: var(--success);
+    }
+
+    .relatorio-stat-value.negativo {
+      color: var(--danger);
+    }
+
+    .dias-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .dia-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+    }
+
+    .dia-data {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+
+    .dia-info {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+    }
+
+    .dia-resultado {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .dia-resultado.positivo {
+      color: var(--success);
+    }
+
+    .dia-resultado.negativo {
+      color: var(--danger);
+    }
+
+    /* ===== ABA: HISTÓRICO ===== */
+    .historico-filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: end;
+      width: 100%;
+    }
+
+    .historico-table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      max-height: 400px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .historico-table {
+      width: 100%;
+      min-width: 600px;
+      border-collapse: collapse;
+    }
+
+    .historico-table th {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px 10px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--card-border);
+      font-size: 0.8rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    .historico-table td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+      vertical-align: middle;
+    }
+
+    .historico-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .status-badge.vitoria {
+      background: rgba(0, 204, 136, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(0, 204, 136, 0.3);
+    }
+
+    .status-badge.derrota {
+      background: rgba(255, 85, 85, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+    }
+
+    .lucro-cell {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .lucro-cell.positivo {
+      color: var(--success);
+    }
+
+    .lucro-cell.negativo {
+      color: var(--danger);
+    }
+
+    .delete-btn {
+      background: rgba(255, 85, 85, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .clear-history-btn {
+      background: rgba(255, 85, 85, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      margin-top: 10px;
+    }
+
+    .historico-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .historico-stats {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .stat-value-small {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .stat-value-small.positivo {
+      color: var(--success);
+    }
+
+    .stat-value-small.negativo {
+      color: var(--danger);
+    }
+
+    /* ===== ABA: CONFIGURAÇÕES ===== */
+    .data-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .json-input {
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 13px;
+      min-height: 100px;
+      resize: vertical;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      margin-bottom: 12px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .config-item {
+      margin-bottom: 15px;
+    }
+
+    .config-item h4 {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ===== MODAIS ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+      overflow-y: auto;
+      padding: 15px;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 15px;
+      max-width: 500px;
+      width: 100%;
+      border: 1px solid var(--card-border);
+      position: relative;
+      animation: modalIn 0.3s ease;
+      margin: auto;
+    }
+
+    .modal h3 {
+      margin-bottom: 12px;
+      color: var(--text);
+      font-size: 1.1rem;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      width: 100%;
+    }
+
+    /* ===== ESTADOS VAZIOS ===== */
+    .empty-state {
+      text-align: center;
+      padding: 25px 15px;
+      color: var(--text-secondary);
+      grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      opacity: 0.3;
+    }
+
+    .empty-state p {
+      font-size: 0.9rem;
+    }
+
+    /* ===== RESPONSIVIDADE ===== */
+    @media (min-width: 768px) {
+      body {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 2.2rem;
+      }
+
+      .header p {
+        font-size: 1rem;
+      }
+
+      .nav-abas {
+        padding: 8px;
+      }
+
+      .nav-aba {
+        padding: 12px 10px;
+        font-size: 0.9rem;
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 16px;
+      }
+
+      .bets-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+      }
+
+      .bet-btn {
+        padding: 12px 8px;
+        min-height: 90px;
+      }
+
+      .banca-total {
+        font-size: 2.8rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+
+      .relatorio-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      .historico-filters {
+        grid-template-columns: 1fr 1fr auto;
+        gap: 12px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .aba-apostas .main-content {
+        grid-template-columns: 1fr;
+      }
+
+      .aba-estatisticas .main-content,
+      .aba-relatorios .main-content,
+      .aba-historico .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Prevenir zoom em inputs no iOS */
+    @media screen and (max-width: 767px) {
+
+      input,
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
+
+    /* Melhorias para toque */
+    @media (hover: none) and (pointer: coarse) {
+
+      .btn-icon:hover,
+      .bet-btn:hover,
+      .btn-primary:hover,
+      .btn-secondary:hover,
+      .btn-success:hover,
+      .btn-danger:hover,
+      .btn-warning:hover,
+      .btn-info:hover,
+      .sort-btn:hover,
+      .stat-card:hover,
+      .delete-btn:hover,
+      .clear-history-btn:hover,
+      .periodo-rapido:hover,
+      .nav-aba:hover {
+        transform: none;
+      }
+
+      .btn-icon:active,
+      .bet-btn:active,
+      .btn-primary:active,
+      .btn-secondary:active,
+      .btn-success:active,
+      .btn-danger:active,
+      .btn-warning:active,
+      .btn-info:active,
+      .sort-btn:active,
+      .stat-card:active,
+      .delete-btn:active,
+      .clear-history-btn:active,
+      .periodo-rapido:active,
+      .nav-aba:active {
+        transform: scale(0.98);
+      }
+    }
+
+    /* Prevenir seleção de texto desnecessária */
+    * {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    input,
+    textarea {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
-<div class="container">
-  <header class="header">
-    <h1>BetFlow Tracker</h1>
-    <p>Gerencie suas apostas, analise resultados e maximize seus lucros</p>
-    <div class="header-controls">
-      <button class="btn-icon" onclick="exportarDados()" title="Exportar dados">
-        <i class="fas fa-download"></i>
-      </button>
-      <button class="btn-icon" onclick="abrirModal('importModal')" title="Importar dados">
-        <i class="fas fa-upload"></i>
-      </button>
-      <button class="btn-icon" onclick="abrirConfirmacao('Tem certeza que deseja limpar TODOS os dados?', limparDados)" title="Limpar todos os dados">
-        <i class="fas fa-trash-alt"></i>
-      </button>
-    </div>
-  </header>
-  
-  <!-- ===== NAVEGAÇÃO POR ABAS ===== -->
-  <div class="nav-abas">
-    <button class="nav-aba active" onclick="mudarAba('apostas')">
-      <i class="fas fa-coins"></i> Apostas
-    </button>
-    <button class="nav-aba" onclick="mudarAba('banca')">
-      <i class="fas fa-wallet"></i> Banca
-    </button>
-    <button class="nav-aba" onclick="mudarAba('estatisticas')">
-      <i class="fas fa-chart-line"></i> Estatísticas
-    </button>
-    <button class="nav-aba" onclick="mudarAba('relatorios')">
-      <i class="fas fa-chart-pie"></i> Relatórios
-    </button>
-    <button class="nav-aba" onclick="mudarAba('historico')">
-      <i class="fas fa-history"></i> Histórico
-    </button>
-    <button class="nav-aba" onclick="mudarAba('configuracoes')">
-      <i class="fas fa-cog"></i> Config
-    </button>
-  </div>
-  
-  <!-- ===== ABA: APOSTAS ===== -->
-  <div id="aba-apostas" class="secao-aba active">
-    <div class="card">
-      <h3><i class="fas fa-plus-circle"></i> Nova Aposta</h3>
-      <div class="input-group">
-        <label for="valor"><i class="fas fa-money-bill-wave"></i> Valor Apostado (R$)</label>
-        <input type="number" id="valor" placeholder="Ex: 1.50" step="0.01" min="0.01" inputmode="decimal">
-      </div>
-      <div class="input-group">
-        <label for="retorno"><i class="fas fa-coins"></i> Retorno Potencial (R$)</label>
-        <input type="number" id="retorno" placeholder="Ex: 2.00" step="0.01" min="0.01" inputmode="decimal">
-      </div>
-      <button class="btn-primary" onclick="addAposta()">
-        <i class="fas fa-save"></i> Adicionar Aposta
-      </button>
-    </div>
-    
-    <div class="card">
-      <div class="bets-header">
-        <h3><i class="fas fa-list"></i> Apostas Cadastradas</h3>
-        <div class="sort-options">
-          <button class="sort-btn active" onclick="ordenarApostas('valor', 'asc')">
-            <i class="fas fa-sort-amount-down-alt"></i> Valor
-          </button>
-          <button class="sort-btn" onclick="ordenarApostas('retorno', 'desc')">
-            <i class="fas fa-sort-amount-down"></i> Retorno
-          </button>
-          <button class="sort-btn" onclick="ordenarApostas('odds', 'desc')">
-            <i class="fas fa-chart-line"></i> Odds
-          </button>
-        </div>
-      </div>
-      <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 0.85rem;">
-        Selecione uma aposta para registrar o resultado:
-      </p>
-      <div class="bets-grid" id="listaApostas"></div>
-    </div>
-    
-    <div class="card">
-      <h3><i class="fas fa-flag-checkered"></i> Registrar Resultado</h3>
-      <p id="aposta-selecionada-info" style="margin-bottom: 12px; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">
-        <i class="fas fa-info-circle"></i> Nenhuma aposta selecionada
-      </p>
-      <div class="result-buttons">
-        <button class="btn-success" onclick="registrar('vitoria')">
-          <i class="fas fa-trophy"></i> Vitória
+  <div class="container">
+    <header class="header">
+      <h1>BetFlow Tracker</h1>
+      <p>Gerencie suas apostas, analise resultados e maximize seus lucros</p>
+      <div class="header-controls">
+        <button class="btn-icon" onclick="exportarDados()" title="Exportar dados">
+          <i class="fas fa-download"></i>
         </button>
-        <button class="btn-danger" onclick="registrar('derrota')">
-          <i class="fas fa-times-circle"></i> Derrota
+        <button class="btn-icon" onclick="abrirModal('importModal')" title="Importar dados">
+          <i class="fas fa-upload"></i>
+        </button>
+        <button class="btn-icon"
+          onclick="abrirConfirmacao('Tem certeza que deseja limpar TODOS os dados e zerar a banca?', limparDados)"
+          title="Limpar todos os dados">
+          <i class="fas fa-trash-alt"></i>
         </button>
       </div>
-    </div>
-  </div>
-  
-  <!-- ===== ABA: BANCA ===== -->
-  <div id="aba-banca" class="secao-aba">
-    <div class="banca-display">
-      <div class="banca-total" id="bancaAtual">R$ 1.000,00</div>
-      <div class="banca-label">Banca Atual</div>
-      <div class="banca-variacao" id="variacaoBanca">+0%</div>
-    </div>
-    
-    <div class="card">
-      <h3><i class="fas fa-exchange-alt"></i> Movimentação</h3>
-      <div class="banca-acoes">
-        <button class="btn-deposito" onclick="abrirModal('depositoModal')">
-          <i class="fas fa-plus-circle"></i> Depósito
-        </button>
-        <button class="btn-saque" onclick="abrirModal('saqueModal')">
-          <i class="fas fa-minus-circle"></i> Saque
-        </button>
-      </div>
-      
-      <div class="input-group">
-        <label for="bancaInicial"><i class="fas fa-piggy-bank"></i> Banca Inicial (R$)</label>
-        <input type="number" id="bancaInicial" value="1000" step="0.01" min="0" onchange="atualizarBanca()">
-      </div>
-      
-      <div class="banca-detalhes">
-        <div class="banca-item">
-          <div class="banca-item-label">Banca Inicial</div>
-          <div class="banca-item-valor" id="displayBancaInicial">R$ 1.000,00</div>
-        </div>
-        <div class="banca-item">
-          <div class="banca-item-label">Lucro/Prejuízo</div>
-          <div class="banca-item-valor" id="displayLucroTotal">R$ 0,00</div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="card">
-      <h3><i class="fas fa-history"></i> Últimas Movimentações</h3>
-      <div id="listaMovimentacoes">
-        <div class="empty-state">
-          <i class="fas fa-exchange-alt"></i>
-          <p>Nenhuma movimentação registrada</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- ===== ABA: ESTATÍSTICAS ===== -->
-  <div id="aba-estatisticas" class="secao-aba">
-    <div class="card">
-      <h3><i class="fas fa-filter"></i> Filtros</h3>
-      <div class="date-filters">
-        <div class="input-group">
-          <label for="inicio"><i class="fas fa-calendar-alt"></i> Data Inicial</label>
-          <input type="date" id="inicio">
-        </div>
-        <div class="input-group">
-          <label for="fim"><i class="fas fa-calendar-alt"></i> Data Final</label>
-          <input type="date" id="fim">
-        </div>
-      </div>
-      <button class="btn-primary" onclick="filtrar()">
-        <i class="fas fa-filter"></i> Aplicar Filtro
+    </header>
+
+    <!-- ===== NAVEGAÇÃO POR ABAS ===== -->
+    <div class="nav-abas">
+      <button class="nav-aba active" onclick="mudarAba('apostas')">
+        <i class="fas fa-coins"></i> Apostas
+      </button>
+      <button class="nav-aba" onclick="mudarAba('banca')">
+        <i class="fas fa-wallet"></i> Banca
+      </button>
+      <button class="nav-aba" onclick="mudarAba('estatisticas')">
+        <i class="fas fa-chart-line"></i> Estatísticas
+      </button>
+      <button class="nav-aba" onclick="mudarAba('relatorios')">
+        <i class="fas fa-chart-pie"></i> Relatórios
+      </button>
+      <button class="nav-aba" onclick="mudarAba('historico')">
+        <i class="fas fa-history"></i> Histórico
+      </button>
+      <button class="nav-aba" onclick="mudarAba('configuracoes')">
+        <i class="fas fa-cog"></i> Config
       </button>
     </div>
-    
-    <div class="card">
-      <h3><i class="fas fa-chart-bar"></i> Estatísticas Gerais</h3>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h4><i class="fas fa-gamepad"></i> Partidas</h4>
-          <div class="stat-value stat-neutral" id="p">0</div>
-        </div>
-        
-        <div class="stat-card">
-          <h4><i class="fas fa-check-circle"></i> Vitórias</h4>
-          <div class="stat-value stat-positive" id="v">0</div>
-        </div>
-        
-        <div class="stat-card">
-          <h4><i class="fas fa-times-circle"></i> Derrotas</h4>
-          <div class="stat-value stat-negative" id="d">0</div>
-        </div>
-        
-        <div class="stat-card">
-          <h4><i class="fas fa-hand-holding-usd"></i> Apostado</h4>
-          <div class="stat-value stat-neutral">R$ <span id="apostado">0.00</span></div>
-        </div>
-        
-        <div class="stat-card">
-          <h4><i class="fas fa-money-check-alt"></i> Ganho</h4>
-          <div class="stat-value stat-positive">R$ <span id="ganho">0.00</span></div>
-        </div>
-        
-        <div class="stat-card lucro-card">
-          <h4><i class="fas fa-chart-bar"></i> Lucro Líquido</h4>
-          <div class="stat-value" id="l">R$ 0.00</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- ===== ABA: RELATÓRIOS ===== -->
-  <div id="aba-relatorios" class="secao-aba">
-    <div class="card">
-      <h3><i class="fas fa-chart-pie"></i> Relatório Personalizado</h3>
-      
-      <div class="periodos-rapidos">
-        <button class="periodo-rapido ativo" onclick="aplicarPeriodoRapido('hoje')">Hoje</button>
-        <button class="periodo-rapido" onclick="aplicarPeriodoRapido('ontem')">Ontem</button>
-        <button class="periodo-rapido" onclick="aplicarPeriodoRapido('semana')">7 Dias</button>
-        <button class="periodo-rapido" onclick="aplicarPeriodoRapido('mes')">30 Dias</button>
-        <button class="periodo-rapido" onclick="aplicarPeriodoRapido('tudo')">Tudo</button>
-      </div>
-      
-      <div class="relatorios-filters">
+
+    <!-- ===== ABA: APOSTAS ===== -->
+    <div id="aba-apostas" class="secao-aba active">
+      <div class="card">
+        <h3><i class="fas fa-plus-circle"></i> Nova Aposta</h3>
         <div class="input-group">
-          <label for="relatorioInicio"><i class="fas fa-calendar-alt"></i> Data Inicial</label>
-          <input type="date" id="relatorioInicio">
+          <label for="valor"><i class="fas fa-money-bill-wave"></i> Valor Apostado (R$)</label>
+          <input type="number" id="valor" placeholder="Ex: 1.50" step="0.01" min="0.01" inputmode="decimal">
         </div>
         <div class="input-group">
-          <label for="relatorioFim"><i class="fas fa-calendar-alt"></i> Data Final</label>
-          <input type="date" id="relatorioFim">
+          <label for="retorno"><i class="fas fa-coins"></i> Retorno Potencial (R$)</label>
+          <input type="number" id="retorno" placeholder="Ex: 2.00" step="0.01" min="0.01" inputmode="decimal">
         </div>
-        <button class="btn-info" onclick="gerarRelatorio()">
-          <i class="fas fa-chart-line"></i> Gerar
+        <button class="btn-primary" onclick="addAposta()">
+          <i class="fas fa-save"></i> Adicionar Aposta
         </button>
       </div>
-    </div>
-    
-    <div id="relatorioContainer">
-      <!-- Relatório será gerado aqui -->
-    </div>
-  </div>
-  
-  <!-- ===== ABA: HISTÓRICO ===== -->
-  <div id="aba-historico" class="secao-aba">
-    <div class="card">
-      <h3><i class="fas fa-history"></i> Histórico Completo</h3>
-      
-      <div class="historico-filters">
-        <div class="input-group">
-          <label for="historicoInicio"><i class="fas fa-calendar-alt"></i> Data Inicial</label>
-          <input type="date" id="historicoInicio">
-        </div>
-        <div class="input-group">
-          <label for="historicoFim"><i class="fas fa-calendar-alt"></i> Data Final</label>
-          <input type="date" id="historicoFim">
-        </div>
-        <button class="btn-info" onclick="filtrarHistorico()">
-          <i class="fas fa-filter"></i> Filtrar
-        </button>
-      </div>
-      
-      <div class="historico-table-container">
-        <table class="historico-table" id="tabelaHistorico">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Resultado</th>
-              <th>Valor</th>
-              <th>Retorno</th>
-              <th>Lucro</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="corpoHistorico">
-            <!-- Histórico será preenchido aqui -->
-          </tbody>
-        </table>
-      </div>
-      
-      <button class="clear-history-btn" onclick="limparHistorico()" style="width: 100%;">
-        <i class="fas fa-trash-alt"></i> Limpar Todo Histórico
-      </button>
-      
-      <div class="historico-summary">
-        <div class="historico-stats">
-          <div class="stat-item">
-            <span class="stat-label">Total de Registros</span>
-            <span class="stat-value-small" id="totalRegistros">0</span>
+
+      <div class="card">
+        <div class="bets-header">
+          <h3><i class="fas fa-list"></i> Apostas Cadastradas</h3>
+          <div class="sort-options">
+            <button class="sort-btn active" onclick="ordenarApostas('valor', 'asc')">
+              <i class="fas fa-sort-amount-down-alt"></i> Valor
+            </button>
+            <button class="sort-btn" onclick="ordenarApostas('retorno', 'desc')">
+              <i class="fas fa-sort-amount-down"></i> Retorno
+            </button>
+            <button class="sort-btn" onclick="ordenarApostas('odds', 'desc')">
+              <i class="fas fa-chart-line"></i> Odds
+            </button>
           </div>
-          <div class="stat-item">
-            <span class="stat-label">Total Apostado</span>
-            <span class="stat-value-small" id="totalApostadoHistorico">R$ 0.00</span>
+        </div>
+        <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 0.85rem;">
+          Selecione uma aposta para registrar o resultado:
+        </p>
+        <div class="bets-grid" id="listaApostas"></div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-flag-checkered"></i> Registrar Resultado</h3>
+        <p id="aposta-selecionada-info"
+          style="margin-bottom: 12px; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">
+          <i class="fas fa-info-circle"></i> Nenhuma aposta selecionada
+        </p>
+        <div class="result-buttons">
+          <button class="btn-success" onclick="registrar('vitoria')">
+            <i class="fas fa-trophy"></i> Vitória
+          </button>
+          <button class="btn-danger" onclick="registrar('derrota')">
+            <i class="fas fa-times-circle"></i> Derrota
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ABA: BANCA ===== -->
+    <div id="aba-banca" class="secao-aba">
+      <div class="banca-display">
+        <div class="banca-total" id="bancaAtual">R$ 0,00</div>
+        <div class="banca-label">Banca Atual</div>
+        <div class="banca-variacao" id="variacaoBanca">+0%</div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-exchange-alt"></i> Movimentação</h3>
+        <div class="banca-acoes">
+          <button class="btn-deposito" onclick="abrirModal('depositoModal')">
+            <i class="fas fa-plus-circle"></i> Depósito
+          </button>
+          <button class="btn-saque" onclick="abrirModal('saqueModal')">
+            <i class="fas fa-minus-circle"></i> Saque
+          </button>
+        </div>
+
+        <div class="banca-detalhes">
+          <div class="banca-item">
+            <div class="banca-item-label">Total Depositado</div>
+            <div class="banca-item-valor" id="totalDepositado">R$ 0,00</div>
           </div>
-          <div class="stat-item">
-            <span class="stat-label">Lucro Total</span>
-            <span class="stat-value-small" id="lucroTotalHistorico">R$ 0.00</span>
+          <div class="banca-item">
+            <div class="banca-item-label">Lucro/Prejuízo</div>
+            <div class="banca-item-valor" id="displayLucroTotal">R$ 0,00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-history"></i> Últimas Movimentações</h3>
+        <div id="listaMovimentacoes">
+          <div class="empty-state">
+            <i class="fas fa-exchange-alt"></i>
+            <p>Nenhuma movimentação registrada</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  
-  <!-- ===== ABA: CONFIGURAÇÕES ===== -->
-  <div id="aba-configuracoes" class="secao-aba">
-    <div class="card">
-      <h3><i class="fas fa-database"></i> Gerenciar Dados</h3>
-      
-      <div class="data-actions">
-        <button class="btn-warning" onclick="exportarDados()">
-          <i class="fas fa-file-export"></i> Exportar Dados
+
+    <!-- ===== ABA: ESTATÍSTICAS ===== -->
+    <div id="aba-estatisticas" class="secao-aba">
+      <div class="card">
+        <h3><i class="fas fa-filter"></i> Filtros</h3>
+        <div class="date-filters">
+          <div class="input-group">
+            <label for="inicio"><i class="fas fa-calendar-alt"></i> Data Inicial</label>
+            <input type="date" id="inicio">
+          </div>
+          <div class="input-group">
+            <label for="fim"><i class="fas fa-calendar-alt"></i> Data Final</label>
+            <input type="date" id="fim">
+          </div>
+        </div>
+        <button class="btn-primary" onclick="filtrar()">
+          <i class="fas fa-filter"></i> Aplicar Filtro
         </button>
-        <button class="btn-secondary" onclick="abrirModal('importModal')">
-          <i class="fas fa-file-import"></i> Importar Dados
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-chart-bar"></i> Estatísticas Gerais</h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h4><i class="fas fa-gamepad"></i> Partidas</h4>
+            <div class="stat-value stat-neutral" id="p">0</div>
+          </div>
+
+          <div class="stat-card">
+            <h4><i class="fas fa-check-circle"></i> Vitórias</h4>
+            <div class="stat-value stat-positive" id="v">0</div>
+          </div>
+
+          <div class="stat-card">
+            <h4><i class="fas fa-times-circle"></i> Derrotas</h4>
+            <div class="stat-value stat-negative" id="d">0</div>
+          </div>
+
+          <div class="stat-card">
+            <h4><i class="fas fa-hand-holding-usd"></i> Apostado</h4>
+            <div class="stat-value stat-neutral">R$ <span id="apostado">0.00</span></div>
+          </div>
+
+          <div class="stat-card">
+            <h4><i class="fas fa-money-check-alt"></i> Ganho</h4>
+            <div class="stat-value stat-positive">R$ <span id="ganho">0.00</span></div>
+          </div>
+
+          <div class="stat-card lucro-card">
+            <h4><i class="fas fa-chart-bar"></i> Lucro Líquido</h4>
+            <div class="stat-value" id="l">R$ 0.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ABA: RELATÓRIOS ===== -->
+    <div id="aba-relatorios" class="secao-aba">
+      <div class="card">
+        <h3><i class="fas fa-chart-pie"></i> Relatório Personalizado</h3>
+
+        <div class="periodos-rapidos">
+          <button class="periodo-rapido ativo" onclick="aplicarPeriodoRapido('hoje')">Hoje</button>
+          <button class="periodo-rapido" onclick="aplicarPeriodoRapido('ontem')">Ontem</button>
+          <button class="periodo-rapido" onclick="aplicarPeriodoRapido('semana')">7 Dias</button>
+          <button class="periodo-rapido" onclick="aplicarPeriodoRapido('mes')">30 Dias</button>
+          <button class="periodo-rapido" onclick="aplicarPeriodoRapido('tudo')">Tudo</button>
+        </div>
+
+        <div class="relatorios-filters">
+          <div class="input-group">
+            <label for="relatorioInicio"><i class="fas fa-calendar-alt"></i> Data Inicial</label>
+            <input type="date" id="relatorioInicio">
+          </div>
+          <div class="input-group">
+            <label for="relatorioFim"><i class="fas fa-calendar-alt"></i> Data Final</label>
+            <input type="date" id="relatorioFim">
+          </div>
+          <button class="btn-info" onclick="gerarRelatorio()">
+            <i class="fas fa-chart-line"></i> Gerar
+          </button>
+        </div>
+      </div>
+
+      <div id="relatorioContainer">
+        <!-- Relatório será gerado aqui -->
+      </div>
+    </div>
+
+    <!-- ===== ABA: HISTÓRICO ===== -->
+    <div id="aba-historico" class="secao-aba">
+      <div class="card">
+        <h3><i class="fas fa-history"></i> Histórico Completo</h3>
+
+        <div class="historico-filters">
+          <div class="input-group">
+            <label for="historicoInicio"><i class="fas fa-calendar-alt"></i> Data Inicial</label>
+            <input type="date" id="historicoInicio">
+          </div>
+          <div class="input-group">
+            <label for="historicoFim"><i class="fas fa-calendar-alt"></i> Data Final</label>
+            <input type="date" id="historicoFim">
+          </div>
+          <button class="btn-info" onclick="filtrarHistorico()">
+            <i class="fas fa-filter"></i> Filtrar
+          </button>
+        </div>
+
+        <div class="historico-table-container">
+          <table class="historico-table" id="tabelaHistorico">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Resultado</th>
+                <th>Valor</th>
+                <th>Retorno</th>
+                <th>Lucro</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="corpoHistorico">
+              <!-- Histórico será preenchido aqui -->
+            </tbody>
+          </table>
+        </div>
+
+        <button class="clear-history-btn" onclick="limparHistorico()" style="width: 100%;">
+          <i class="fas fa-trash-alt"></i> Limpar Todo Histórico
+        </button>
+
+        <div class="historico-summary">
+          <div class="historico-stats">
+            <div class="stat-item">
+              <span class="stat-label">Total de Registros</span>
+              <span class="stat-value-small" id="totalRegistros">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Total Apostado</span>
+              <span class="stat-value-small" id="totalApostadoHistorico">R$ 0.00</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Lucro Total</span>
+              <span class="stat-value-small" id="lucroTotalHistorico">R$ 0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ABA: CONFIGURAÇÕES ===== -->
+    <div id="aba-configuracoes" class="secao-aba">
+      <div class="card">
+        <h3><i class="fas fa-database"></i> Gerenciar Dados</h3>
+
+        <div class="data-actions">
+          <button class="btn-warning" onclick="exportarDados()">
+            <i class="fas fa-file-export"></i> Exportar Dados
+          </button>
+          <button class="btn-secondary" onclick="abrirModal('importModal')">
+            <i class="fas fa-file-import"></i> Importar Dados
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-sliders-h"></i> Configurações</h3>
+
+        <div class="config-item">
+          <h4><i class="fas fa-bell"></i> Notificações</h4>
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="notificacoesAtivas" checked>
+            <span>Ativar notificações de resultados</span>
+          </label>
+        </div>
+
+        <div class="config-item">
+          <h4><i class="fas fa-palette"></i> Tema</h4>
+          <select id="temaSelecionado"
+            style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); color: var(--text);">
+            <option value="escuro">Escuro (Padrão)</option>
+            <option value="escuro-azul">Escuro Azul</option>
+            <option value="escuro-verde">Escuro Verde</option>
+          </select>
+        </div>
+
+        <div class="config-item">
+          <h4><i class="fas fa-language"></i> Idioma</h4>
+          <select id="idiomaSelecionado"
+            style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); color: var(--text);">
+            <option value="pt-BR">Português (Brasil)</option>
+            <option value="en-US">English (US)</option>
+            <option value="es-ES">Español</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>BetFlow Tracker &copy; 2025 | Dados salvos automaticamente no navegador</p>
+    </footer>
+  </div>
+
+  <!-- ===== MODAIS ===== -->
+  <div id="depositoModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="fecharModal('depositoModal')">&times;</button>
+      <h3><i class="fas fa-plus-circle"></i> Realizar Depósito</h3>
+      <div class="input-group">
+        <label for="valorDeposito"><i class="fas fa-money-bill-wave"></i> Valor do Depósito (R$)</label>
+        <input type="number" id="valorDeposito" placeholder="Ex: 100.00" step="0.01" min="0.01" inputmode="decimal">
+      </div>
+      <div class="input-group">
+        <label for="descricaoDeposito"><i class="fas fa-file-alt"></i> Descrição (opcional)</label>
+        <input type="text" id="descricaoDeposito" placeholder="Ex: Depósito inicial">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+        <button class="btn-success" onclick="realizarDeposito()">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+        <button class="btn-secondary" onclick="fecharModal('depositoModal')">
+          <i class="fas fa-times"></i> Cancelar
         </button>
       </div>
     </div>
-    
-    <div class="card">
-      <h3><i class="fas fa-sliders-h"></i> Configurações</h3>
-      
-      <div class="config-item">
-        <h4><i class="fas fa-bell"></i> Notificações</h4>
-        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-          <input type="checkbox" id="notificacoesAtivas" checked>
-          <span>Ativar notificações de resultados</span>
-        </label>
+  </div>
+
+  <div id="saqueModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="fecharModal('saqueModal')">&times;</button>
+      <h3><i class="fas fa-minus-circle"></i> Realizar Saque</h3>
+      <div class="input-group">
+        <label for="valorSaque"><i class="fas fa-money-bill-wave"></i> Valor do Saque (R$)</label>
+        <input type="number" id="valorSaque" placeholder="Ex: 50.00" step="0.01" min="0.01" inputmode="decimal">
       </div>
-      
-      <div class="config-item">
-        <h4><i class="fas fa-palette"></i> Tema</h4>
-        <select id="temaSelecionado" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); color: var(--text);">
-          <option value="escuro">Escuro (Padrão)</option>
-          <option value="escuro-azul">Escuro Azul</option>
-          <option value="escuro-verde">Escuro Verde</option>
-        </select>
+      <div class="input-group">
+        <label for="descricaoSaque"><i class="fas fa-file-alt"></i> Descrição (opcional)</label>
+        <input type="text" id="descricaoSaque" placeholder="Ex: Saque para despesas">
       </div>
-      
-      <div class="config-item">
-        <h4><i class="fas fa-language"></i> Idioma</h4>
-        <select id="idiomaSelecionado" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); color: var(--text);">
-          <option value="pt-BR">Português (Brasil)</option>
-          <option value="en-US">English (US)</option>
-          <option value="es-ES">Español</option>
-        </select>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+        <button class="btn-danger" onclick="realizarSaque()">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+        <button class="btn-secondary" onclick="fecharModal('saqueModal')">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
       </div>
     </div>
   </div>
-  
-  <footer>
-    <p>BetFlow Tracker &copy; 2025 | Dados salvos automaticamente no navegador</p>
-  </footer>
-</div>
 
-<!-- ===== MODAIS ===== -->
-<div id="depositoModal" class="modal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="fecharModal('depositoModal')">&times;</button>
-    <h3><i class="fas fa-plus-circle"></i> Realizar Depósito</h3>
-    <div class="input-group">
-      <label for="valorDeposito"><i class="fas fa-money-bill-wave"></i> Valor do Depósito (R$)</label>
-      <input type="number" id="valorDeposito" placeholder="Ex: 100.00" step="0.01" min="0.01" inputmode="decimal">
-    </div>
-    <div class="input-group">
-      <label for="descricaoDeposito"><i class="fas fa-file-alt"></i> Descrição (opcional)</label>
-      <input type="text" id="descricaoDeposito" placeholder="Ex: Depósito inicial">
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-      <button class="btn-success" onclick="realizarDeposito()">
-        <i class="fas fa-check"></i> Confirmar
-      </button>
-      <button class="btn-secondary" onclick="fecharModal('depositoModal')">
-        <i class="fas fa-times"></i> Cancelar
-      </button>
+  <div id="importModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="fecharModal('importModal')">&times;</button>
+      <h3><i class="fas fa-file-import"></i> Importar Dados</h3>
+      <div class="input-group">
+        <label for="jsonInput"><i class="fas fa-code"></i> Cole o JSON aqui:</label>
+        <textarea id="jsonInput" class="json-input"
+          placeholder='{"apostas": [...], "historico": [...], "bancaInicial": 1000, "movimentacoes": [...]}'></textarea>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+        <button class="btn-primary" onclick="importarDados()">
+          <i class="fas fa-check"></i> Importar
+        </button>
+        <button class="btn-secondary" onclick="fecharModal('importModal')">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="saqueModal" class="modal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="fecharModal('saqueModal')">&times;</button>
-    <h3><i class="fas fa-minus-circle"></i> Realizar Saque</h3>
-    <div class="input-group">
-      <label for="valorSaque"><i class="fas fa-money-bill-wave"></i> Valor do Saque (R$)</label>
-      <input type="number" id="valorSaque" placeholder="Ex: 50.00" step="0.01" min="0.01" inputmode="decimal">
-    </div>
-    <div class="input-group">
-      <label for="descricaoSaque"><i class="fas fa-file-alt"></i> Descrição (opcional)</label>
-      <input type="text" id="descricaoSaque" placeholder="Ex: Saque para despesas">
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-      <button class="btn-danger" onclick="realizarSaque()">
-        <i class="fas fa-check"></i> Confirmar
-      </button>
-      <button class="btn-secondary" onclick="fecharModal('saqueModal')">
-        <i class="fas fa-times"></i> Cancelar
-      </button>
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="fecharModal('confirmModal')">&times;</button>
+      <h3><i class="fas fa-exclamation-triangle"></i> Confirmação</h3>
+      <p id="confirmMessage" style="margin-bottom: 20px; font-size: 0.95rem; line-height: 1.4;"></p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button class="btn-danger" id="confirmAction">
+          <i class="fas fa-check"></i> Confirmar
+        </button>
+        <button class="btn-secondary" onclick="fecharModal('confirmModal')">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="importModal" class="modal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="fecharModal('importModal')">&times;</button>
-    <h3><i class="fas fa-file-import"></i> Importar Dados</h3>
-    <div class="input-group">
-      <label for="jsonInput"><i class="fas fa-code"></i> Cole o JSON aqui:</label>
-      <textarea id="jsonInput" class="json-input" placeholder='{"apostas": [...], "historico": [...], "bancaInicial": 1000, "movimentacoes": [...]}'></textarea>
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-      <button class="btn-primary" onclick="importarDados()">
-        <i class="fas fa-check"></i> Importar
-      </button>
-      <button class="btn-secondary" onclick="fecharModal('importModal')">
-        <i class="fas fa-times"></i> Cancelar
-      </button>
-    </div>
-  </div>
-</div>
+  <script>
+    // ===== VARIÁVEIS GLOBAIS =====
+    let apostas = JSON.parse(localStorage.getItem("valores")) || [];
+    let historico = JSON.parse(localStorage.getItem("apostas")) || [];
+    let movimentacoes = JSON.parse(localStorage.getItem("movimentacoes")) || [];
+    let apostaSelecionada = null;
+    let ordenacaoAtual = { campo: 'valor', direcao: 'asc' };
+    let abaAtual = 'apostas';
 
-<div id="confirmModal" class="modal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="fecharModal('confirmModal')">&times;</button>
-    <h3><i class="fas fa-exclamation-triangle"></i> Confirmação</h3>
-    <p id="confirmMessage" style="margin-bottom: 20px; font-size: 0.95rem; line-height: 1.4;"></p>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-      <button class="btn-danger" id="confirmAction">
-        <i class="fas fa-check"></i> Confirmar
-      </button>
-      <button class="btn-secondary" onclick="fecharModal('confirmModal')">
-        <i class="fas fa-times"></i> Cancelar
-      </button>
-    </div>
-  </div>
-</div>
+    // ===== DEBUG =====
+    function debugBanca() {
+      console.log("=== DEBUG BANCA ===");
+      console.log("Movimentações:", movimentacoes);
+      console.log("Histórico:", historico);
+      console.log("Totais calculados:", calcularTotaisBanca());
+      console.log("=== FIM DEBUG ===");
+    }
 
-<script>
-// ===== VARIÁVEIS GLOBAIS =====
-let apostas = JSON.parse(localStorage.getItem("valores")) || [];
-let historico = JSON.parse(localStorage.getItem("apostas")) || [];
-let bancaInicial = parseFloat(localStorage.getItem("bancaInicial")) || 1000;
-let movimentacoes = JSON.parse(localStorage.getItem("movimentacoes")) || [];
-let apostaSelecionada = null;
-let ordenacaoAtual = { campo: 'valor', direcao: 'asc' };
-let abaAtual = 'apostas';
+    // ===== FUNÇÕES DE NAVEGAÇÃO =====
+    function mudarAba(aba) {
+      // Esconder todas as abas
+      document.querySelectorAll('.secao-aba').forEach(secao => {
+        secao.classList.remove('active');
+      });
 
-// ===== FUNÇÕES DE NAVEGAÇÃO =====
-function mudarAba(aba) {
-  // Esconder todas as abas
-  document.querySelectorAll('.secao-aba').forEach(secao => {
-    secao.classList.remove('active');
-  });
-  
-  // Remover classe active de todos os botões
-  document.querySelectorAll('.nav-aba').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  
-  // Mostrar aba selecionada
-  document.getElementById(`aba-${aba}`).classList.add('active');
-  
-  // Ativar botão correspondente
-  event.target.classList.add('active');
-  
-  // Atualizar aba atual
-  abaAtual = aba;
-  
-  // Executar ações específicas da aba
-  if (aba === 'estatisticas') {
-    filtrar();
-  } else if (aba === 'relatorios') {
-    gerarRelatorio();
-  } else if (aba === 'historico') {
-    filtrarHistorico();
-  } else if (aba === 'banca') {
-    carregarMovimentacoes();
-  }
-}
+      // Remover classe active de todos os botões
+      document.querySelectorAll('.nav-aba').forEach(btn => {
+        btn.classList.remove('active');
+      });
 
-// ===== FUNÇÕES DE BANCA =====
-function inicializarBanca() {
-  const bancaInput = document.getElementById('bancaInicial');
-  if (bancaInput) {
-    bancaInput.value = bancaInicial.toFixed(2);
-  }
-  atualizarBanca();
-}
+      // Mostrar aba selecionada
+      document.getElementById(`aba-${aba}`).classList.add('active');
 
-function atualizarBanca() {
-  // Atualizar banca inicial se houver input
-  const bancaInput = document.getElementById('bancaInicial');
-  if (bancaInput) {
-    bancaInicial = parseFloat(bancaInput.value) || 1000;
-    localStorage.setItem("bancaInicial", bancaInicial.toString());
-  }
-  
-  // Calcular lucro total do histórico
-  const lucroTotal = historico.reduce((total, registro) => {
-    return total + (registro.resultado === "vitoria" ? 
-      registro.retorno - registro.valor : 
-      -registro.valor);
-  }, 0);
-  
-  // Somar movimentações (depósitos são positivos, saques negativos)
-  const totalMovimentacoes = movimentacoes.reduce((total, mov) => {
-    return total + (mov.tipo === 'deposito' ? mov.valor : -mov.valor);
-  }, 0);
-  
-  // Calcular banca atual
-  const bancaAtual = bancaInicial + lucroTotal + totalMovimentacoes;
-  
-  // Calcular variação percentual
-  const baseCalculo = bancaInicial + totalMovimentacoes;
-  const variacaoPercentual = baseCalculo > 0 ? 
-    ((bancaAtual - baseCalculo) / baseCalculo) * 100 : 0;
-  
-  // Atualizar interface
-  const bancaAtualElement = document.getElementById('bancaAtual');
-  const variacaoElement = document.getElementById('variacaoBanca');
-  const displayBancaInicial = document.getElementById('displayBancaInicial');
-  const displayLucroTotal = document.getElementById('displayLucroTotal');
-  
-  if (bancaAtualElement) {
-    bancaAtualElement.textContent = `R$ ${formatarMoeda(bancaAtual)}`;
-  }
-  
-  if (variacaoElement) {
-    variacaoElement.textContent = `${variacaoPercentual >= 0 ? '+' : ''}${variacaoPercentual.toFixed(2)}%`;
-    variacaoElement.className = 'banca-variacao ' + 
-      (variacaoPercentual > 0 ? 'positiva' : variacaoPercentual < 0 ? 'negativa' : '');
-  }
-  
-  if (displayBancaInicial) {
-    displayBancaInicial.textContent = `R$ ${formatarMoeda(bancaInicial)}`;
-  }
-  
-  if (displayLucroTotal) {
-    displayLucroTotal.textContent = `${lucroTotal >= 0 ? '+' : ''}R$ ${formatarMoeda(Math.abs(lucroTotal))}`;
-    displayLucroTotal.style.color = lucroTotal >= 0 ? 'var(--success)' : 'var(--danger)';
-  }
-  
-  salvar();
-}
+      // Ativar botão correspondente
+      event.target.classList.add('active');
 
-function realizarDeposito() {
-  const valor = parseFloat(document.getElementById('valorDeposito').value);
-  const descricao = document.getElementById('descricaoDeposito').value;
-  
-  if (isNaN(valor) || valor <= 0) {
-    showFeedback('Por favor, informe um valor válido para depósito.', 'error');
-    return;
-  }
-  
-  const novaMovimentacao = {
-    id: Date.now(),
-    tipo: 'deposito',
-    valor: valor,
-    descricao: descricao || 'Depósito',
-    data: new Date().toISOString().split('T')[0],
-    timestamp: Date.now()
-  };
-  
-  movimentacoes.push(novaMovimentacao);
-  salvar();
-  atualizarBanca();
-  carregarMovimentacoes();
-  
-  fecharModal('depositoModal');
-  document.getElementById('valorDeposito').value = '';
-  document.getElementById('descricaoDeposito').value = '';
-  
-  showFeedback(`Depósito de R$ ${valor.toFixed(2)} realizado com sucesso!`, 'success');
-}
+      // Atualizar aba atual
+      abaAtual = aba;
 
-function realizarSaque() {
-  const valor = parseFloat(document.getElementById('valorSaque').value);
-  const descricao = document.getElementById('descricaoSaque').value;
-  
-  if (isNaN(valor) || valor <= 0) {
-    showFeedback('Por favor, informe um valor válido para saque.', 'error');
-    return;
-  }
-  
-  // Calcular banca atual para verificar se há saldo suficiente
-  const lucroTotal = historico.reduce((total, registro) => {
-    return total + (registro.resultado === "vitoria" ? 
-      registro.retorno - registro.valor : 
-      -registro.valor);
-  }, 0);
-  
-  const totalMovimentacoes = movimentacoes.reduce((total, mov) => {
-    return total + (mov.tipo === 'deposito' ? mov.valor : -mov.valor);
-  }, 0);
-  
-  const bancaAtual = bancaInicial + lucroTotal + totalMovimentacoes;
-  
-  if (valor > bancaAtual) {
-    showFeedback('Saldo insuficiente para realizar o saque.', 'error');
-    return;
-  }
-  
-  const novaMovimentacao = {
-    id: Date.now(),
-    tipo: 'saque',
-    valor: valor,
-    descricao: descricao || 'Saque',
-    data: new Date().toISOString().split('T')[0],
-    timestamp: Date.now()
-  };
-  
-  movimentacoes.push(novaMovimentacao);
-  salvar();
-  atualizarBanca();
-  carregarMovimentacoes();
-  
-  fecharModal('saqueModal');
-  document.getElementById('valorSaque').value = '';
-  document.getElementById('descricaoSaque').value = '';
-  
-  showFeedback(`Saque de R$ ${valor.toFixed(2)} realizado com sucesso!`, 'success');
-}
+      // Executar ações específicas da aba
+      if (aba === 'estatisticas') {
+        filtrar();
+      } else if (aba === 'relatorios') {
+        gerarRelatorio();
+      } else if (aba === 'historico') {
+        filtrarHistorico();
+      } else if (aba === 'banca') {
+        carregarMovimentacoes();
+      }
+    }
 
-function carregarMovimentacoes() {
-  const container = document.getElementById('listaMovimentacoes');
-  if (!container) return;
-  
-  if (movimentacoes.length === 0) {
-    container.innerHTML = `
+    // ===== FUNÇÕES DE BANCA =====
+    function inicializarBanca() {
+      atualizarBanca();
+    }
+
+    function calcularTotaisBanca() {
+      // Certifique-se que movimentacoes existe e é um array
+      if (!movimentacoes || !Array.isArray(movimentacoes)) {
+        movimentacoes = [];
+      }
+
+      // Calcular total depositado
+      const totalDepositado = movimentacoes
+        .filter(mov => mov && mov.tipo === 'deposito')
+        .reduce((total, mov) => total + (mov.valor || 0), 0);
+
+      // Calcular total sacado
+      const totalSacado = movimentacoes
+        .filter(mov => mov && mov.tipo === 'saque')
+        .reduce((total, mov) => total + (mov.valor || 0), 0);
+
+      // Calcular lucro total das apostas
+      const lucroApostas = historico.reduce((total, registro) => {
+        return total + (registro.resultado === "vitoria" ?
+          (registro.retorno || 0) - (registro.valor || 0) :
+          -(registro.valor || 0));
+      }, 0);
+
+      // Banca atual = Total depositado - Total sacado + Lucro das apostas
+      const bancaAtual = totalDepositado - totalSacado + lucroApostas;
+
+      // Calcular variação percentual (baseado no total depositado)
+      const variacaoPercentual = totalDepositado > 0 ?
+        ((bancaAtual - totalDepositado) / totalDepositado) * 100 : 0;
+
+      return {
+        totalDepositado,
+        totalSacado,
+        lucroApostas,
+        bancaAtual,
+        variacaoPercentual
+      };
+    }
+
+    function atualizarBanca() {
+      const totais = calcularTotaisBanca();
+
+      // Atualizar interface
+      const bancaAtualElement = document.getElementById('bancaAtual');
+      const variacaoElement = document.getElementById('variacaoBanca');
+      const totalDepositadoElement = document.getElementById('totalDepositado');
+      const displayLucroTotal = document.getElementById('displayLucroTotal');
+
+      if (bancaAtualElement) {
+        bancaAtualElement.textContent = `R$ ${formatarMoeda(totais.bancaAtual)}`;
+      }
+
+      if (variacaoElement) {
+        variacaoElement.textContent = `${totais.variacaoPercentual >= 0 ? '+' : ''}${totais.variacaoPercentual.toFixed(2)}%`;
+        variacaoElement.className = 'banca-variacao ' +
+          (totais.variacaoPercentual > 0 ? 'positiva' : totais.variacaoPercentual < 0 ? 'negativa' : '');
+      }
+
+      if (totalDepositadoElement) {
+        totalDepositadoElement.textContent = `R$ ${formatarMoeda(totais.totalDepositado)}`;
+      }
+
+      if (displayLucroTotal) {
+        displayLucroTotal.textContent = `${totais.lucroApostas >= 0 ? '+' : ''}R$ ${formatarMoeda(Math.abs(totais.lucroApostas))}`;
+        displayLucroTotal.style.color = totais.lucroApostas >= 0 ? 'var(--success)' : 'var(--danger)';
+      }
+
+      salvar();
+    }
+
+    function realizarDeposito() {
+      const valor = parseFloat(document.getElementById('valorDeposito').value);
+      const descricao = document.getElementById('descricaoDeposito').value;
+
+      if (isNaN(valor) || valor <= 0) {
+        showFeedback('Por favor, informe um valor válido para depósito.', 'error');
+        return;
+      }
+
+      // Verificar se movimentacoes é um array
+      if (!Array.isArray(movimentacoes)) {
+        movimentacoes = [];
+      }
+
+      const novaMovimentacao = {
+        id: Date.now(),
+        tipo: 'deposito',
+        valor: valor,
+        descricao: descricao || 'Depósito',
+        data: new Date().toISOString().split('T')[0],
+        timestamp: Date.now()
+      };
+
+      console.log("Adicionando depósito:", novaMovimentacao); // Debug
+
+      movimentacoes.push(novaMovimentacao);
+      salvar();
+      atualizarBanca();
+      carregarMovimentacoes();
+
+      fecharModal('depositoModal');
+      document.getElementById('valorDeposito').value = '';
+      document.getElementById('descricaoDeposito').value = '';
+
+      showFeedback(`Depósito de R$ ${valor.toFixed(2)} realizado com sucesso!`, 'success');
+    }
+
+    function realizarSaque() {
+      const valor = parseFloat(document.getElementById('valorSaque').value);
+      const descricao = document.getElementById('descricaoSaque').value;
+
+      if (isNaN(valor) || valor <= 0) {
+        showFeedback('Por favor, informe um valor válido para saque.', 'error');
+        return;
+      }
+
+      // Verificar se movimentacoes é um array
+      if (!Array.isArray(movimentacoes)) {
+        movimentacoes = [];
+      }
+
+      // Verificar saldo disponível
+      const totais = calcularTotaisBanca();
+
+      if (valor > totais.bancaAtual) {
+        const saldoDisponivel = totais.bancaAtual.toFixed(2);
+        showFeedback(`Saldo insuficiente! Disponível: R$ ${saldoDisponivel}`, 'error');
+        return;
+      }
+
+      const novaMovimentacao = {
+        id: Date.now(),
+        tipo: 'saque',
+        valor: valor,
+        descricao: descricao || 'Saque',
+        data: new Date().toISOString().split('T')[0],
+        timestamp: Date.now()
+      };
+
+      console.log("Adicionando saque:", novaMovimentacao); // Debug
+
+      movimentacoes.push(novaMovimentacao);
+      salvar();
+      atualizarBanca();
+      carregarMovimentacoes();
+
+      fecharModal('saqueModal');
+      document.getElementById('valorSaque').value = '';
+      document.getElementById('descricaoSaque').value = '';
+
+      showFeedback(`Saque de R$ ${valor.toFixed(2)} realizado com sucesso!`, 'success');
+    }
+
+    function carregarMovimentacoes() {
+      const container = document.getElementById('listaMovimentacoes');
+      if (!container) return;
+
+      // Verificar se movimentacoes é válido
+      if (!Array.isArray(movimentacoes)) {
+        console.error("Movimentações não é um array!", movimentacoes);
+        movimentacoes = [];
+        salvar();
+      }
+
+      if (movimentacoes.length === 0) {
+        container.innerHTML = `
       <div class="empty-state">
         <i class="fas fa-exchange-alt"></i>
         <p>Nenhuma movimentação registrada</p>
       </div>
     `;
-    return;
-  }
-  
-  // Ordenar por data (mais recente primeiro)
-  const movimentacoesOrdenadas = [...movimentacoes].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
-  
-  let html = '';
-  movimentacoesOrdenadas.forEach(mov => {
-    const tipoIcon = mov.tipo === 'deposito' ? 'fa-plus-circle' : 'fa-minus-circle';
-    const tipoClasse = mov.tipo === 'deposito' ? 'positivo' : 'negativo';
-    const tipoTexto = mov.tipo === 'deposito' ? 'Depósito' : 'Saque';
-    
-    html += `
+        return;
+      }
+
+      // Ordenar por data (mais recente primeiro)
+      const movimentacoesOrdenadas = [...movimentacoes]
+        .filter(mov => mov && typeof mov === 'object') // Filtrar itens inválidos
+        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+        .slice(0, 10);
+
+      let html = '';
+      movimentacoesOrdenadas.forEach(mov => {
+        if (!mov || !mov.tipo) return; // Pular itens inválidos
+
+        const tipoIcon = mov.tipo === 'deposito' ? 'fa-plus-circle' : 'fa-minus-circle';
+        const tipoTexto = mov.tipo === 'deposito' ? 'Depósito' : 'Saque';
+
+        html += `
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
         <div style="flex: 1;">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
@@ -1859,241 +1911,275 @@ function carregarMovimentacoes() {
             <span style="font-weight: 600; font-size: 0.9rem;">${tipoTexto}</span>
           </div>
           <div style="font-size: 0.8rem; color: var(--text-secondary);">
-            ${formatarData(mov.data)} ${mov.descricao ? '• ' + mov.descricao : ''}
+            ${formatarData(mov.data || new Date().toISOString().split('T')[0])} ${mov.descricao ? '• ' + mov.descricao : ''}
           </div>
         </div>
         <div style="font-weight: 700; font-size: 1rem; color: ${mov.tipo === 'deposito' ? 'var(--success)' : 'var(--danger)'}">
-          ${mov.tipo === 'deposito' ? '+' : '-'}R$ ${mov.valor.toFixed(2)}
+          ${mov.tipo === 'deposito' ? '+' : '-'}R$ ${(mov.valor || 0).toFixed(2)}
         </div>
       </div>
     `;
-  });
-  
-  container.innerHTML = html;
-}
+      });
 
-// ===== FUNÇÕES DE APOSTAS (mantidas do código anterior) =====
-function ordenarApostas(campo, direcao) {
-  ordenacaoAtual = { campo, direcao };
-  
-  document.querySelectorAll('.sort-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  
-  event.target.classList.add('active');
-  
-  apostas.sort((a, b) => {
-    let valorA, valorB;
-    
-    if (campo === 'odds') {
-      valorA = a.retorno / a.valor;
-      valorB = b.retorno / b.valor;
-    } else {
-      valorA = a[campo];
-      valorB = b[campo];
+      container.innerHTML = html;
     }
-    
-    if (direcao === 'asc') {
-      return valorA - valorB;
-    } else {
-      return valorB - valorA;
+
+    // ===== TESTAR PERSISTÊNCIA =====
+    function testarPersistencia() {
+      console.log("=== TESTE DE PERSISTÊNCIA ===");
+      console.log("1. Movimentações salvas:", movimentacoes);
+      console.log("2. LocalStorage movimentacoes:", localStorage.getItem("movimentacoes"));
+      console.log("3. Banca calculada:", calcularTotaisBanca().bancaAtual);
+      console.log("=== FIM TESTE ===");
+
+      // Forçar recálculo e atualização
+      atualizarBanca();
     }
-  });
-  
-  salvar();
-  renderApostas();
-}
 
-function hoje() {
-  return new Date().toISOString().split("T")[0];
-}
+    // ===== FUNÇÕES DE APOSTAS (mantidas do código anterior) =====
+    function ordenarApostas(campo, direcao, event = null) {
+      ordenacaoAtual = { campo, direcao };
 
-function salvar() {
-  localStorage.setItem("valores", JSON.stringify(apostas));
-  localStorage.setItem("apostas", JSON.stringify(historico));
-  localStorage.setItem("bancaInicial", bancaInicial.toString());
-  localStorage.setItem("movimentacoes", JSON.stringify(movimentacoes));
-}
+      // Só atualizar a interface se houver um evento (clique do usuário)
+      if (event && event.target) {
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
 
-function addAposta() {
-  let valor = parseFloat(document.getElementById("valor").value);
-  let retorno = parseFloat(document.getElementById("retorno").value);
-  
-  if (isNaN(valor) || isNaN(retorno) || valor <= 0 || retorno <= 0) {
-    showFeedback("Por favor, preencha valores válidos e positivos", "error");
-    return;
-  }
-  
-  if (retorno <= valor) {
-    showFeedback("O retorno deve ser maior que o valor apostado!", "error");
-    return;
-  }
-  
-  apostas.push({ valor, retorno });
-  
-  ordenarApostas('valor', 'asc');
-  
-  document.getElementById("valor").value = '';
-  document.getElementById("retorno").value = '';
-  
-  showFeedback('Aposta adicionada e ordenada por valor!', 'success');
-}
+        event.target.classList.add('active');
+      } else {
+        // Se não tem evento, apenas ativar o botão correspondente se existir
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
 
-function renderApostas() {
-  let div = document.getElementById("listaApostas");
-  div.innerHTML = "";
-  
-  if (apostas.length === 0) {
-    div.innerHTML = `
+        // Ativar o botão correspondente à ordenação atual
+        const buttons = document.querySelectorAll('.sort-btn');
+        if (campo === 'valor' && direcao === 'asc') {
+          if (buttons[0]) buttons[0].classList.add('active');
+        } else if (campo === 'retorno' && direcao === 'desc') {
+          if (buttons[1]) buttons[1].classList.add('active');
+        } else if (campo === 'odds' && direcao === 'desc') {
+          if (buttons[2]) buttons[2].classList.add('active');
+        }
+      }
+
+      apostas.sort((a, b) => {
+        let valorA, valorB;
+
+        if (campo === 'odds') {
+          valorA = a.retorno / a.valor;
+          valorB = b.retorno / b.valor;
+        } else {
+          valorA = a[campo];
+          valorB = b[campo];
+        }
+
+        if (direcao === 'asc') {
+          return valorA - valorB;
+        } else {
+          return valorB - valorA;
+        }
+      });
+
+      salvar();
+      renderApostas();
+    }
+
+    function hoje() {
+      return new Date().toISOString().split("T")[0];
+    }
+
+    function salvar() {
+      console.log("Salvando dados...", { movimentacoes }); // Debug
+      localStorage.setItem("valores", JSON.stringify(apostas));
+      localStorage.setItem("apostas", JSON.stringify(historico));
+      localStorage.setItem("movimentacoes", JSON.stringify(movimentacoes));
+    }
+
+    function addAposta() {
+      let valor = parseFloat(document.getElementById("valor").value);
+      let retorno = parseFloat(document.getElementById("retorno").value);
+
+      if (isNaN(valor) || isNaN(retorno) || valor <= 0 || retorno <= 0) {
+        showFeedback("Por favor, preencha valores válidos e positivos", "error");
+        return;
+      }
+
+      if (retorno <= valor) {
+        showFeedback("O retorno deve ser maior que o valor apostado!", "error");
+        return;
+      }
+
+      apostas.push({ valor, retorno });
+
+      ordenarApostas('valor', 'asc');
+
+      document.getElementById("valor").value = '';
+      document.getElementById("retorno").value = '';
+
+      showFeedback('Aposta adicionada e ordenada por valor!', 'success');
+    }
+
+    function renderApostas() {
+      let div = document.getElementById("listaApostas");
+      div.innerHTML = "";
+
+      if (apostas.length === 0) {
+        div.innerHTML = `
       <div class="empty-state">
         <i class="fas fa-clipboard-list"></i>
         <p>Nenhuma aposta cadastrada.</p>
         <p style="font-size: 0.85rem; margin-top: 5px;">Adicione uma nova aposta acima.</p>
       </div>
     `;
-    return;
-  }
-  
-  apostas.forEach((a, index) => {
-    let b = document.createElement("button");
-    b.className = "bet-btn";
-    
-    let odds = (a.retorno / a.valor).toFixed(2);
-    let lucroPotencial = (a.retorno - a.valor).toFixed(2);
-    
-    b.innerHTML = `
+        return;
+      }
+
+      apostas.forEach((a, index) => {
+        let b = document.createElement("button");
+        b.className = "bet-btn";
+
+        let odds = (a.retorno / a.valor).toFixed(2);
+        let lucroPotencial = (a.retorno - a.valor).toFixed(2);
+
+        b.innerHTML = `
       <div class="bet-index">#${index + 1}</div>
       <div class="bet-odds">${odds}x</div>
       <div class="bet-value">R$ ${a.valor.toFixed(2)}</div>
       <div class="bet-return">→ R$ ${a.retorno.toFixed(2)}</div>
       <div style="font-size: 0.75rem; margin-top: 3px; opacity: 0.7;">+R$ ${lucroPotencial}</div>
     `;
-    
-    b.onclick = () => {
-      apostaSelecionada = a;
-      document.querySelectorAll(".bet-btn").forEach(btn => btn.classList.remove("active"));
-      b.classList.add("active");
-      
-      document.getElementById("aposta-selecionada-info").innerHTML = `
+
+        b.onclick = () => {
+          apostaSelecionada = a;
+          document.querySelectorAll(".bet-btn").forEach(btn => btn.classList.remove("active"));
+          b.classList.add("active");
+
+          document.getElementById("aposta-selecionada-info").innerHTML = `
         <i class="fas fa-check-circle" style="color: var(--success);"></i> 
         <strong>Aposta selecionada:</strong> R$ ${a.valor.toFixed(2)} 
         <br><span style="font-size: 0.85rem;">Retorno: R$ ${a.retorno.toFixed(2)} | Odds: ${odds}x | Lucro potencial: R$ ${lucroPotencial}</span>
       `;
-    };
-    div.appendChild(b);
-  });
-}
+        };
+        div.appendChild(b);
+      });
+    }
 
-function registrar(resultado) {
-  if (!apostaSelecionada) {
-    showFeedback("Por favor, selecione uma aposta antes de registrar o resultado.", "error");
-    return;
-  }
+    function registrar(resultado) {
+      if (!apostaSelecionada) {
+        showFeedback("Por favor, selecione uma aposta antes de registrar o resultado.", "error");
+        return;
+      }
 
-  const novoRegistro = {
-    data: hoje(),
-    resultado,
-    valor: apostaSelecionada.valor,
-    retorno: apostaSelecionada.retorno,
-    id: Date.now() + Math.floor(Math.random() * 1000)
-  };
+      const novoRegistro = {
+        data: hoje(),
+        resultado,
+        valor: apostaSelecionada.valor,
+        retorno: apostaSelecionada.retorno,
+        id: Date.now() + Math.floor(Math.random() * 1000)
+      };
 
-  historico.push(novoRegistro);
+      historico.push(novoRegistro);
 
-  salvar();
-  filtrar();
-  filtrarHistorico();
-  atualizarBanca();
-  
-  if (resultado === "vitoria") {
-    showFeedback('🏆 Vitória registrada com sucesso! Banca atualizada.', 'success');
-  } else {
-    showFeedback('❌ Derrota registrada. Banca atualizada.', 'error');
-  }
-}
+      salvar();
+      filtrar();
+      filtrarHistorico();
+      atualizarBanca();
 
-// ===== FUNÇÕES AUXILIARES =====
-function formatarData(dataISO) {
-  const data = new Date(dataISO + 'T12:00:00');
-  return data.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
-}
+      if (resultado === "vitoria") {
+        showFeedback('🏆 Vitória registrada com sucesso! Banca atualizada.', 'success');
+      } else {
+        showFeedback('❌ Derrota registrada. Banca atualizada.', 'error');
+      }
+    }
 
-function formatarMoeda(valor) {
-  return valor.toFixed(2).replace('.', ',');
-}
+    // ===== FUNÇÕES AUXILIARES =====
+    function formatarData(dataISO) {
+      const data = new Date(dataISO + 'T12:00:00');
+      return data.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
 
-function aplicarPeriodoRapido(periodo) {
-  const hoje = new Date();
-  const inicioInput = document.getElementById('relatorioInicio');
-  const fimInput = document.getElementById('relatorioFim');
-  
-  // Remover classe ativa de todos os botões
-  document.querySelectorAll('.periodo-rapido').forEach(btn => {
-    btn.classList.remove('ativo');
-  });
-  
-  // Adicionar classe ativa ao botão clicado
-  event.target.classList.add('ativo');
-  
-  switch(periodo) {
-    case 'hoje':
-      const hojeStr = hoje.toISOString().split('T')[0];
-      inicioInput.value = hojeStr;
-      fimInput.value = hojeStr;
-      break;
-      
-    case 'ontem':
-      const ontem = new Date(hoje);
-      ontem.setDate(ontem.getDate() - 1);
-      const ontemStr = ontem.toISOString().split('T')[0];
-      inicioInput.value = ontemStr;
-      fimInput.value = ontemStr;
-      break;
-      
-    case 'semana':
-      const semanaAtras = new Date(hoje);
-      semanaAtras.setDate(semanaAtras.getDate() - 7);
-      const semanaAtrasStr = semanaAtras.toISOString().split('T')[0];
-      const hojeStr2 = hoje.toISOString().split('T')[0];
-      inicioInput.value = semanaAtrasStr;
-      fimInput.value = hojeStr2;
-      break;
-      
-    case 'mes':
-      const mesAtras = new Date(hoje);
-      mesAtras.setDate(mesAtras.getDate() - 30);
-      const mesAtrasStr = mesAtras.toISOString().split('T')[0];
-      const hojeStr3 = hoje.toISOString().split('T')[0];
-      inicioInput.value = mesAtrasStr;
-      fimInput.value = hojeStr3;
-      break;
-      
-    case 'tudo':
-      inicioInput.value = '';
-      fimInput.value = '';
-      break;
-  }
-  
-  // Gerar relatório automaticamente
-  gerarRelatorio();
-}
+    function formatarMoeda(valor) {
+      // Corrigir para valores muito grandes ou muito pequenos
+      if (isNaN(valor) || !isFinite(valor)) {
+        return "0,00";
+      }
+      return Math.abs(valor).toFixed(2).replace('.', ',');
+    }
 
-function gerarRelatorio() {
-  const inicio = document.getElementById('relatorioInicio').value;
-  const fim = document.getElementById('relatorioFim').value;
-  
-  const registrosFiltrados = historico.filter(registro => {
-    if (inicio && registro.data < inicio) return false;
-    if (fim && registro.data > fim) return false;
-    return true;
-  });
-  
-  if (registrosFiltrados.length === 0) {
-    document.getElementById('relatorioContainer').innerHTML = `
+    function aplicarPeriodoRapido(periodo) {
+      const hoje = new Date();
+      const inicioInput = document.getElementById('relatorioInicio');
+      const fimInput = document.getElementById('relatorioFim');
+
+      // Remover classe ativa de todos os botões
+      document.querySelectorAll('.periodo-rapido').forEach(btn => {
+        btn.classList.remove('ativo');
+      });
+
+      // Adicionar classe ativa ao botão clicado
+      event.target.classList.add('ativo');
+
+      switch (periodo) {
+        case 'hoje':
+          const hojeStr = hoje.toISOString().split('T')[0];
+          inicioInput.value = hojeStr;
+          fimInput.value = hojeStr;
+          break;
+
+        case 'ontem':
+          const ontem = new Date(hoje);
+          ontem.setDate(ontem.getDate() - 1);
+          const ontemStr = ontem.toISOString().split('T')[0];
+          inicioInput.value = ontemStr;
+          fimInput.value = ontemStr;
+          break;
+
+        case 'semana':
+          const semanaAtras = new Date(hoje);
+          semanaAtras.setDate(semanaAtras.getDate() - 7);
+          const semanaAtrasStr = semanaAtras.toISOString().split('T')[0];
+          const hojeStr2 = hoje.toISOString().split('T')[0];
+          inicioInput.value = semanaAtrasStr;
+          fimInput.value = hojeStr2;
+          break;
+
+        case 'mes':
+          const mesAtras = new Date(hoje);
+          mesAtras.setDate(mesAtras.getDate() - 30);
+          const mesAtrasStr = mesAtras.toISOString().split('T')[0];
+          const hojeStr3 = hoje.toISOString().split('T')[0];
+          inicioInput.value = mesAtrasStr;
+          fimInput.value = hojeStr3;
+          break;
+
+        case 'tudo':
+          inicioInput.value = '';
+          fimInput.value = '';
+          break;
+      }
+
+      // Gerar relatório automaticamente
+      gerarRelatorio();
+    }
+
+    function gerarRelatorio() {
+      const inicio = document.getElementById('relatorioInicio').value;
+      const fim = document.getElementById('relatorioFim').value;
+
+      const registrosFiltrados = historico.filter(registro => {
+        if (inicio && registro.data < inicio) return false;
+        if (fim && registro.data > fim) return false;
+        return true;
+      });
+
+      if (registrosFiltrados.length === 0) {
+        document.getElementById('relatorioContainer').innerHTML = `
       <div class="relatorio-gerado">
         <div class="empty-state">
           <i class="fas fa-chart-bar" style="font-size: 2.5rem;"></i>
@@ -2102,92 +2188,92 @@ function gerarRelatorio() {
         </div>
       </div>
     `;
-    return;
-  }
-  
-  // Calcular estatísticas
-  const stats = calcularEstatisticasRelatorio(registrosFiltrados);
-  
-  // Gerar HTML do relatório
-  const html = criarHTMLRelatorio(stats, inicio, fim);
-  
-  // Exibir relatório
-  document.getElementById('relatorioContainer').innerHTML = html;
-}
+        return;
+      }
 
-function calcularEstatisticasRelatorio(registros) {
-  const totalApostas = registros.length;
-  const vitorias = registros.filter(r => r.resultado === 'vitoria').length;
-  const derrotas = registros.filter(r => r.resultado === 'derrota').length;
-  
-  const totalApostado = registros.reduce((sum, r) => sum + r.valor, 0);
-  const totalRetornado = registros
-    .filter(r => r.resultado === 'vitoria')
-    .reduce((sum, r) => sum + r.retorno, 0);
-  
-  const lucroTotal = totalRetornado - totalApostado;
-  const variacaoPercentual = totalApostado > 0 ? (lucroTotal / totalApostado) * 100 : 0;
-  
-  // Agrupar por data
-  const apostasPorDia = {};
-  registros.forEach(registro => {
-    if (!apostasPorDia[registro.data]) {
-      apostasPorDia[registro.data] = {
-        apostas: 0,
-        totalApostado: 0,
-        totalRetornado: 0,
-        lucro: 0
+      // Calcular estatísticas
+      const stats = calcularEstatisticasRelatorio(registrosFiltrados);
+
+      // Gerar HTML do relatório
+      const html = criarHTMLRelatorio(stats, inicio, fim);
+
+      // Exibir relatório
+      document.getElementById('relatorioContainer').innerHTML = html;
+    }
+
+    function calcularEstatisticasRelatorio(registros) {
+      const totalApostas = registros.length;
+      const vitorias = registros.filter(r => r.resultado === 'vitoria').length;
+      const derrotas = registros.filter(r => r.resultado === 'derrota').length;
+
+      const totalApostado = registros.reduce((sum, r) => sum + r.valor, 0);
+      const totalRetornado = registros
+        .filter(r => r.resultado === 'vitoria')
+        .reduce((sum, r) => sum + r.retorno, 0);
+
+      const lucroTotal = totalRetornado - totalApostado;
+      const variacaoPercentual = totalApostado > 0 ? (lucroTotal / totalApostado) * 100 : 0;
+
+      // Agrupar por data
+      const apostasPorDia = {};
+      registros.forEach(registro => {
+        if (!apostasPorDia[registro.data]) {
+          apostasPorDia[registro.data] = {
+            apostas: 0,
+            totalApostado: 0,
+            totalRetornado: 0,
+            lucro: 0
+          };
+        }
+
+        apostasPorDia[registro.data].apostas++;
+        apostasPorDia[registro.data].totalApostado += registro.valor;
+
+        if (registro.resultado === 'vitoria') {
+          apostasPorDia[registro.data].totalRetornado += registro.retorno;
+        }
+
+        const lucroDia = registro.resultado === 'vitoria' ?
+          registro.retorno - registro.valor : -registro.valor;
+        apostasPorDia[registro.data].lucro += lucroDia;
+      });
+
+      const diasComLucro = Object.entries(apostasPorDia)
+        .map(([data, info]) => ({ data, ...info }))
+        .sort((a, b) => b.lucro - a.lucro);
+
+      const melhorDia = diasComLucro.length > 0 ? diasComLucro[0] : null;
+      const piorDia = diasComLucro.length > 0 ? diasComLucro[diasComLucro.length - 1] : null;
+      const lucroMedioPorAposta = totalApostas > 0 ? lucroTotal / totalApostas : 0;
+
+      return {
+        totalApostas,
+        vitorias,
+        derrotas,
+        totalApostado,
+        totalRetornado,
+        lucroTotal,
+        variacaoPercentual,
+        diasComLucro,
+        melhorDia,
+        piorDia,
+        lucroMedioPorAposta,
+        diasAtivos: Object.keys(apostasPorDia).length
       };
     }
-    
-    apostasPorDia[registro.data].apostas++;
-    apostasPorDia[registro.data].totalApostado += registro.valor;
-    
-    if (registro.resultado === 'vitoria') {
-      apostasPorDia[registro.data].totalRetornado += registro.retorno;
-    }
-    
-    const lucroDia = registro.resultado === 'vitoria' ? 
-      registro.retorno - registro.valor : -registro.valor;
-    apostasPorDia[registro.data].lucro += lucroDia;
-  });
-  
-  const diasComLucro = Object.entries(apostasPorDia)
-    .map(([data, info]) => ({ data, ...info }))
-    .sort((a, b) => b.lucro - a.lucro);
-  
-  const melhorDia = diasComLucro.length > 0 ? diasComLucro[0] : null;
-  const piorDia = diasComLucro.length > 0 ? diasComLucro[diasComLucro.length - 1] : null;
-  const lucroMedioPorAposta = totalApostas > 0 ? lucroTotal / totalApostas : 0;
-  
-  return {
-    totalApostas,
-    vitorias,
-    derrotas,
-    totalApostado,
-    totalRetornado,
-    lucroTotal,
-    variacaoPercentual,
-    diasComLucro,
-    melhorDia,
-    piorDia,
-    lucroMedioPorAposta,
-    diasAtivos: Object.keys(apostasPorDia).length
-  };
-}
 
-function criarHTMLRelatorio(stats, inicio, fim) {
-  const periodoTexto = inicio && fim ? 
-    `${formatarData(inicio)} a ${formatarData(fim)}` : 
-    inicio ? `A partir de ${formatarData(inicio)}` :
-    fim ? `Até ${formatarData(fim)}` : 'Todo período';
-  
-  const badgeClass = stats.lucroTotal >= 0 ? 'lucro' : 'prejuizo';
-  const badgeTexto = stats.lucroTotal >= 0 ? 
-    `+R$ ${stats.lucroTotal.toFixed(2)}` : 
-    `-R$ ${Math.abs(stats.lucroTotal).toFixed(2)}`;
-  
-  return `
+    function criarHTMLRelatorio(stats, inicio, fim) {
+      const periodoTexto = inicio && fim ?
+        `${formatarData(inicio)} a ${formatarData(fim)}` :
+        inicio ? `A partir de ${formatarData(inicio)}` :
+          fim ? `Até ${formatarData(fim)}` : 'Todo período';
+
+      const badgeClass = stats.lucroTotal >= 0 ? 'lucro' : 'prejuizo';
+      const badgeTexto = stats.lucroTotal >= 0 ?
+        `+R$ ${stats.lucroTotal.toFixed(2)}` :
+        `-R$ ${Math.abs(stats.lucroTotal).toFixed(2)}`;
+
+      return `
     <div class="relatorio-gerado">
       <div class="relatorio-header">
         <h4>📊 ${periodoTexto}</h4>
@@ -2289,31 +2375,31 @@ function criarHTMLRelatorio(stats, inicio, fim) {
       </div>
     </div>
   `;
-}
+    }
 
-function filtrarHistorico() {
-  const inicio = document.getElementById('historicoInicio').value;
-  const fim = document.getElementById('historicoFim').value;
-  
-  let registrosFiltrados = historico.filter(registro => {
-    if (inicio && registro.data < inicio) return false;
-    if (fim && registro.data > fim) return false;
-    return true;
-  });
-  
-  renderHistorico(registrosFiltrados);
-}
+    function filtrarHistorico() {
+      const inicio = document.getElementById('historicoInicio').value;
+      const fim = document.getElementById('historicoFim').value;
 
-function renderHistorico(registrosFiltrados) {
-  const corpoHistorico = document.getElementById('corpoHistorico');
-  const totalRegistros = document.getElementById('totalRegistros');
-  const totalApostado = document.getElementById('totalApostadoHistorico');
-  const lucroTotal = document.getElementById('lucroTotalHistorico');
-  
-  corpoHistorico.innerHTML = '';
-  
-  if (registrosFiltrados.length === 0) {
-    corpoHistorico.innerHTML = `
+      let registrosFiltrados = historico.filter(registro => {
+        if (inicio && registro.data < inicio) return false;
+        if (fim && registro.data > fim) return false;
+        return true;
+      });
+
+      renderHistorico(registrosFiltrados);
+    }
+
+    function renderHistorico(registrosFiltrados) {
+      const corpoHistorico = document.getElementById('corpoHistorico');
+      const totalRegistros = document.getElementById('totalRegistros');
+      const totalApostado = document.getElementById('totalApostadoHistorico');
+      const lucroTotal = document.getElementById('lucroTotalHistorico');
+
+      corpoHistorico.innerHTML = '';
+
+      if (registrosFiltrados.length === 0) {
+        corpoHistorico.innerHTML = `
       <tr>
         <td colspan="6" style="text-align: center; padding: 30px; color: var(--text-secondary);">
           <i class="fas fa-history" style="font-size: 1.5rem; opacity: 0.3; margin-bottom: 10px; display: block;"></i>
@@ -2321,31 +2407,31 @@ function renderHistorico(registrosFiltrados) {
         </td>
       </tr>
     `;
-    totalRegistros.textContent = '0';
-    totalApostado.textContent = 'R$ 0.00';
-    lucroTotal.textContent = 'R$ 0.00';
-    lucroTotal.className = 'stat-value-small';
-    return;
-  }
-  
-  registrosFiltrados.sort((a, b) => {
-    if (b.data !== a.data) {
-      return new Date(b.data) - new Date(a.data);
-    }
-    return b.id - a.id;
-  });
-  
-  let totalApostadoValue = 0;
-  let lucroTotalValue = 0;
-  
-  registrosFiltrados.forEach(registro => {
-    totalApostadoValue += registro.valor;
-    const lucro = registro.resultado === 'vitoria' ? registro.retorno - registro.valor : -registro.valor;
-    lucroTotalValue += lucro;
-    
-    const row = document.createElement('tr');
-    
-    row.innerHTML = `
+        totalRegistros.textContent = '0';
+        totalApostado.textContent = 'R$ 0.00';
+        lucroTotal.textContent = 'R$ 0.00';
+        lucroTotal.className = 'stat-value-small';
+        return;
+      }
+
+      registrosFiltrados.sort((a, b) => {
+        if (b.data !== a.data) {
+          return new Date(b.data) - new Date(a.data);
+        }
+        return b.id - a.id;
+      });
+
+      let totalApostadoValue = 0;
+      let lucroTotalValue = 0;
+
+      registrosFiltrados.forEach(registro => {
+        totalApostadoValue += registro.valor;
+        const lucro = registro.resultado === 'vitoria' ? registro.retorno - registro.valor : -registro.valor;
+        lucroTotalValue += lucro;
+
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
       <td>${formatarData(registro.data)}</td>
       <td>
         <span class="status-badge ${registro.resultado}">
@@ -2363,210 +2449,229 @@ function renderHistorico(registrosFiltrados) {
         </button>
       </td>
     `;
-    
-    corpoHistorico.appendChild(row);
-  });
-  
-  totalRegistros.textContent = registrosFiltrados.length;
-  totalApostado.textContent = `R$ ${totalApostadoValue.toFixed(2)}`;
-  lucroTotal.textContent = `${lucroTotalValue >= 0 ? '+' : ''}R$ ${lucroTotalValue.toFixed(2)}`;
-  lucroTotal.className = `stat-value-small ${lucroTotalValue > 0 ? 'positivo' : lucroTotalValue < 0 ? 'negativo' : ''}`;
-}
 
-function removerRegistro(id) {
-  const idNumero = Number(id);
-  
-  abrirConfirmacao(
-    'Tem certeza que deseja remover este registro?',
-    () => {
-      historico = historico.filter(registro => {
-        return Number(registro.id) !== idNumero;
+        corpoHistorico.appendChild(row);
       });
-      
-      salvar();
-      filtrar();
-      filtrarHistorico();
-      atualizarBanca();
-      showFeedback('Registro removido!', 'success');
+
+      totalRegistros.textContent = registrosFiltrados.length;
+      totalApostado.textContent = `R$ ${totalApostadoValue.toFixed(2)}`;
+      lucroTotal.textContent = `${lucroTotalValue >= 0 ? '+' : ''}R$ ${lucroTotalValue.toFixed(2)}`;
+      lucroTotal.className = `stat-value-small ${lucroTotalValue > 0 ? 'positivo' : lucroTotalValue < 0 ? 'negativo' : ''}`;
     }
-  );
-}
 
-function limparHistorico() {
-  abrirConfirmacao(
-    'Tem certeza que deseja limpar TODO o histórico?',
-    () => {
-      historico = [];
-      salvar();
-      filtrar();
-      filtrarHistorico();
-      atualizarBanca();
-      showFeedback('Histórico limpo!', 'success');
+    function removerRegistro(id) {
+      const idNumero = Number(id);
+
+      abrirConfirmacao(
+        'Tem certeza que deseja remover este registro?',
+        () => {
+          historico = historico.filter(registro => {
+            return Number(registro.id) !== idNumero;
+          });
+
+          salvar();
+          filtrar();
+          filtrarHistorico();
+          atualizarBanca();
+          showFeedback('Registro removido!', 'success');
+        }
+      );
     }
-  );
-}
 
-function filtrar() {
-  let inicio = document.getElementById("inicio").value;
-  let fim = document.getElementById("fim").value;
-
-  let f = historico.filter(h => {
-    if (inicio && h.data < inicio) return false;
-    if (fim && h.data > fim) return false;
-    return true;
-  });
-
-  let p=0, v=0, d=0, apostado=0, ganho=0;
-
-  f.forEach(h => {
-    p++;
-    apostado += h.valor;
-    if (h.resultado === "vitoria") {
-      v++;
-      ganho += h.retorno;
-    } else {
-      d++;
+    function limparHistorico() {
+      abrirConfirmacao(
+        'Tem certeza que deseja limpar TODO o histórico?',
+        () => {
+          historico = [];
+          salvar();
+          filtrar();
+          filtrarHistorico();
+          atualizarBanca();
+          showFeedback('Histórico limpo!', 'success');
+        }
+      );
     }
-  });
 
-  let lucro = ganho - apostado;
-  let lucroElement = document.getElementById("l");
-  
-  document.getElementById("p").innerText = p;
-  document.getElementById("v").innerText = v;
-  document.getElementById("d").innerText = d;
-  document.getElementById("apostado").innerText = apostado.toFixed(2);
-  document.getElementById("ganho").innerText = ganho.toFixed(2);
-  lucroElement.innerText = `R$ ${lucro.toFixed(2)}`;
-  
-  if (lucro > 0) {
-    lucroElement.className = "stat-value stat-positive";
-  } else if (lucro < 0) {
-    lucroElement.className = "stat-value stat-negative";
-  } else {
-    lucroElement.className = "stat-value stat-neutral";
-  }
-}
+    function filtrar() {
+      let inicio = document.getElementById("inicio").value;
+      let fim = document.getElementById("fim").value;
 
-// ===== FUNÇÕES DE EXPORTAÇÃO/IMPORTAÇÃO =====
-function exportarDados() {
-  const dados = {
-    apostas: apostas,
-    historico: historico,
-    bancaInicial: bancaInicial,
-    movimentacoes: movimentacoes,
-    exportadoEm: new Date().toISOString(),
-    totalApostas: apostas.length,
-    totalRegistros: historico.length,
-    totalMovimentacoes: movimentacoes.length
-  };
-  
-  const jsonString = JSON.stringify(dados, null, 2);
-  const blob = new Blob([jsonString], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `betflow_backup_${new Date().toISOString().split('T')[0]}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  
-  showFeedback('Dados exportados com sucesso!', 'success');
-}
+      let f = historico.filter(h => {
+        if (inicio && h.data < inicio) return false;
+        if (fim && h.data > fim) return false;
+        return true;
+      });
 
-function importarDados() {
-  const jsonInput = document.getElementById('jsonInput').value;
-  
-  if (!jsonInput.trim()) {
-    showFeedback('Por favor, cole o JSON para importar.', 'error');
-    return;
-  }
-  
-  try {
-    const dados = JSON.parse(jsonInput);
-    
-    if (!dados.apostas || !Array.isArray(dados.apostas)) {
-      throw new Error('Formato JSON inválido');
-    }
-    
-    abrirConfirmacao(
-      `Importar ${dados.apostas.length} apostas?`,
-      () => {
-        apostas = dados.apostas || [];
-        historico = dados.historico || [];
-        bancaInicial = dados.bancaInicial || 1000;
-        movimentacoes = dados.movimentacoes || [];
-        
-        // Garantir IDs únicos
-        historico.forEach(registro => {
-          if (!registro.id) registro.id = Date.now() + Math.floor(Math.random() * 1000000);
-        });
-        
-        salvar();
-        ordenarApostas('valor', 'asc');
-        filtrar();
-        filtrarHistorico();
-        atualizarBanca();
-        carregarMovimentacoes();
-        fecharModal('importModal');
-        showFeedback('Dados importados com sucesso!', 'success');
+      let p = 0, v = 0, d = 0, apostado = 0, ganho = 0;
+
+      f.forEach(h => {
+        p++;
+        apostado += h.valor;
+        if (h.resultado === "vitoria") {
+          v++;
+          ganho += h.retorno;
+        } else {
+          d++;
+        }
+      });
+
+      let lucro = ganho - apostado;
+      let lucroElement = document.getElementById("l");
+
+      document.getElementById("p").innerText = p;
+      document.getElementById("v").innerText = v;
+      document.getElementById("d").innerText = d;
+      document.getElementById("apostado").innerText = apostado.toFixed(2);
+      document.getElementById("ganho").innerText = ganho.toFixed(2);
+      lucroElement.innerText = `R$ ${lucro.toFixed(2)}`;
+
+      if (lucro > 0) {
+        lucroElement.className = "stat-value stat-positive";
+      } else if (lucro < 0) {
+        lucroElement.className = "stat-value stat-negative";
+      } else {
+        lucroElement.className = "stat-value stat-neutral";
       }
-    );
-    
-  } catch (error) {
-    showFeedback(`Erro ao importar: ${error.message}`, 'error');
-  }
-}
+    }
 
-function limparDados() {
-  apostas = [];
-  historico = [];
-  apostaSelecionada = null;
-  bancaInicial = 1000;
-  movimentacoes = [];
-  salvar();
-  renderApostas();
-  filtrar();
-  filtrarHistorico();
-  inicializarBanca();
-  carregarMovimentacoes();
-  showFeedback('Todos os dados foram limpos!', 'success');
-}
+    // ===== FUNÇÕES DE EXPORTAÇÃO/IMPORTAÇÃO =====
+    function exportarDados() {
+      const dados = {
+        apostas: apostas,
+        historico: historico,
+        movimentacoes: movimentacoes,
+        exportadoEm: new Date().toISOString(),
+        totalApostas: apostas.length,
+        totalRegistros: historico.length,
+        totalMovimentacoes: movimentacoes.length
+      };
 
-// ===== FUNÇÕES DE MODAIS =====
-function abrirModal(modalId) {
-  document.getElementById(modalId).style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
+      const jsonString = JSON.stringify(dados, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
 
-function fecharModal(modalId) {
-  document.getElementById(modalId).style.display = 'none';
-  document.body.style.overflow = 'auto';
-  if (modalId === 'importModal') {
-    document.getElementById('jsonInput').value = '';
-  }
-}
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `betflow_backup_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-function abrirConfirmacao(mensagem, acaoConfirmar) {
-  document.getElementById('confirmMessage').textContent = mensagem;
-  const confirmBtn = document.getElementById('confirmAction');
-  
-  const novoConfirmBtn = confirmBtn.cloneNode(true);
-  confirmBtn.parentNode.replaceChild(novoConfirmBtn, confirmBtn);
-  
-  novoConfirmBtn.addEventListener('click', () => {
-    acaoConfirmar();
-    fecharModal('confirmModal');
-  });
-  
-  abrirModal('confirmModal');
-}
+      showFeedback('Dados exportados com sucesso!', 'success');
+    }
 
-function showFeedback(mensagem, tipo) {
-  const feedback = document.createElement("div");
-  feedback.style.cssText = `
+    function importarDados() {
+      const jsonInput = document.getElementById('jsonInput').value;
+
+      if (!jsonInput.trim()) {
+        showFeedback('Por favor, cole o JSON para importar.', 'error');
+        return;
+      }
+
+      try {
+        const dados = JSON.parse(jsonInput);
+
+        if (!dados.apostas || !Array.isArray(dados.apostas)) {
+          throw new Error('Formato JSON inválido');
+        }
+
+        abrirConfirmacao(
+          `Importar ${dados.apostas.length} apostas?`,
+          () => {
+            apostas = dados.apostas || [];
+            historico = dados.historico || [];
+            movimentacoes = dados.movimentacoes || [];
+
+            // Garantir IDs únicos
+            historico.forEach(registro => {
+              if (!registro.id) registro.id = Date.now() + Math.floor(Math.random() * 1000000);
+            });
+
+            salvar();
+            ordenarApostas('valor', 'asc');
+            filtrar();
+            filtrarHistorico();
+            atualizarBanca();
+            carregarMovimentacoes();
+            fecharModal('importModal');
+            showFeedback('Dados importados com sucesso!', 'success');
+          }
+        );
+
+      } catch (error) {
+        showFeedback(`Erro ao importar: ${error.message}`, 'error');
+      }
+    }
+
+    function limparDados() {
+      // Limpar arrays
+      apostas = [];
+      historico = [];
+      movimentacoes = [];
+      apostaSelecionada = null;
+
+      // Limpar localStorage
+      localStorage.removeItem("valores");
+      localStorage.removeItem("apostas");
+      localStorage.removeItem("movimentacoes");
+
+      // Atualizar interface
+      renderApostas();
+      filtrar();
+      filtrarHistorico();
+      atualizarBanca();
+      carregarMovimentacoes();
+
+      // Resetar formulários
+      document.getElementById("valor").value = '';
+      document.getElementById("retorno").value = '';
+
+      showFeedback('Todos os dados foram limpos! Banca zerada para R$ 0,00.', 'success');
+    }
+
+    function limparLocalStorageCompleto() {
+      localStorage.removeItem("valores");
+      localStorage.removeItem("apostas");
+      localStorage.removeItem("movimentacoes");
+      localStorage.removeItem("bancaInicial"); // Se ainda existir
+
+      // Recarrega a página para começar do zero
+      location.reload();
+    }
+
+    // ===== FUNÇÕES DE MODAIS =====
+    function abrirModal(modalId) {
+      document.getElementById(modalId).style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function fecharModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      document.body.style.overflow = 'auto';
+      if (modalId === 'importModal') {
+        document.getElementById('jsonInput').value = '';
+      }
+    }
+
+    function abrirConfirmacao(mensagem, acaoConfirmar) {
+      document.getElementById('confirmMessage').textContent = mensagem;
+      const confirmBtn = document.getElementById('confirmAction');
+
+      const novoConfirmBtn = confirmBtn.cloneNode(true);
+      confirmBtn.parentNode.replaceChild(novoConfirmBtn, confirmBtn);
+
+      novoConfirmBtn.addEventListener('click', () => {
+        acaoConfirmar();
+        fecharModal('confirmModal');
+      });
+
+      abrirModal('confirmModal');
+    }
+
+    function showFeedback(mensagem, tipo) {
+      const feedback = document.createElement("div");
+      feedback.style.cssText = `
     position: fixed;
     top: 20px;
     right: 20px;
@@ -2582,61 +2687,72 @@ function showFeedback(mensagem, tipo) {
     font-size: 0.9rem;
     text-align: center;
   `;
-  
-  if (tipo === 'success') {
-    feedback.style.background = "rgba(0, 204, 136, 0.9)";
-    feedback.innerHTML = `<i class="fas fa-check-circle"></i> ${mensagem}`;
-  } else if (tipo === 'error') {
-    feedback.style.background = "rgba(255, 85, 85, 0.9)";
-    feedback.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${mensagem}`;
-  } else {
-    feedback.style.background = "rgba(0, 153, 255, 0.9)";
-    feedback.innerHTML = `<i class="fas fa-info-circle"></i> ${mensagem}`;
-  }
-  
-  document.body.appendChild(feedback);
-  
-  setTimeout(() => {
-    feedback.style.animation = "slideOut 0.3s ease";
-    setTimeout(() => feedback.remove(), 300);
-  }, 3000);
-}
 
-// ===== INICIALIZAÇÃO =====
-window.onload = function() {
-  let hoje = new Date().toISOString().split("T")[0];
-  let umaSemanaAtras = new Date();
-  umaSemanaAtras.setDate(umaSemanaAtras.getDate() - 7);
-  let umaSemanaAtrasStr = umaSemanaAtras.toISOString().split("T")[0];
-  
-  // Configurar datas padrão
-  const elementosData = ['inicio', 'fim', 'historicoInicio', 'historicoFim', 'relatorioInicio', 'relatorioFim'];
-  elementosData.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.value = id.includes('inicio') ? umaSemanaAtrasStr : hoje;
-    }
-  });
-  
-  // Inicializar tudo
-  ordenarApostas('valor', 'asc');
-  renderApostas();
-  filtrar();
-  filtrarHistorico();
-  inicializarBanca();
-  carregarMovimentacoes();
-  
-  // Aplicar período rápido "Últimos 7 dias" como padrão na aba de relatórios
-  setTimeout(() => {
-    if (document.querySelector('.periodo-rapido[onclick*="semana"]')) {
-      gerarRelatorio();
-    }
-  }, 100);
-};
+      if (tipo === 'success') {
+        feedback.style.background = "rgba(0, 204, 136, 0.9)";
+        feedback.innerHTML = `<i class="fas fa-check-circle"></i> ${mensagem}`;
+      } else if (tipo === 'error') {
+        feedback.style.background = "rgba(255, 85, 85, 0.9)";
+        feedback.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${mensagem}`;
+      } else {
+        feedback.style.background = "rgba(0, 153, 255, 0.9)";
+        feedback.innerHTML = `<i class="fas fa-info-circle"></i> ${mensagem}`;
+      }
 
-// ===== ANIMAÇÕES =====
-const style = document.createElement('style');
-style.textContent = `
+      document.body.appendChild(feedback);
+
+      setTimeout(() => {
+        feedback.style.animation = "slideOut 0.3s ease";
+        setTimeout(() => feedback.remove(), 300);
+      }, 3000);
+    }
+
+    // ===== INICIALIZAÇÃO =====
+    window.onload = function () {
+      let hoje = new Date().toISOString().split("T")[0];
+      let umaSemanaAtras = new Date();
+      umaSemanaAtras.setDate(umaSemanaAtras.getDate() - 7);
+      let umaSemanaAtrasStr = umaSemanaAtras.toISOString().split("T")[0];
+
+      // Configurar datas padrão
+      const elementosData = ['inicio', 'fim', 'historicoInicio', 'historicoFim', 'relatorioInicio', 'relatorioFim'];
+      elementosData.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.value = id.includes('inicio') ? umaSemanaAtrasStr : hoje;
+        }
+      });
+
+      // VERIFICAR E CORRIGIR DADOS
+      console.log("=== INICIALIZANDO ===");
+      console.log("Movimentações carregadas do localStorage:", movimentacoes);
+
+      // Garantir que movimentacoes seja um array válido
+      if (!Array.isArray(movimentacoes)) {
+        console.log("Corrigindo movimentacoes (não era array)");
+        movimentacoes = [];
+        salvar();
+      }
+
+      // Inicializar tudo - SEM event.target
+      ordenarApostas('valor', 'asc');
+      renderApostas();
+      filtrar();
+      filtrarHistorico();
+      atualizarBanca();
+      carregarMovimentacoes();
+
+      // Aplicar período rápido "Últimos 7 dias" como padrão na aba de relatórios
+      setTimeout(() => {
+        if (document.querySelector('.periodo-rapido[onclick*="semana"]')) {
+          gerarRelatorio();
+        }
+      }, 100);
+    };
+
+    // ===== ANIMAÇÕES =====
+    const style = document.createElement('style');
+    style.textContent = `
   @keyframes slideIn {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
@@ -2646,15 +2762,17 @@ style.textContent = `
     to { transform: translateX(100%); opacity: 0; }
   }
 `;
-document.head.appendChild(style);
+    document.head.appendChild(style);
 
-// Fechar modal ao clicar fora
-window.onclick = function(event) {
-  if (event.target.classList.contains('modal')) {
-    event.target.style.display = 'none';
-    document.body.style.overflow = 'auto';
-  }
-};
-</script>
+    // Fechar modal ao clicar fora
+    window.onclick = function (event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    };
+  </script>
+
 </body>
+
 </html>
